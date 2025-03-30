@@ -1,6 +1,7 @@
 CREATE TABLE route(
-	rt_id varchar(256) PRIMARY KEY,
-    route varchar(256),
+	rt char(10) PRIMARY KEY,
+    des varchar(256),
+	stop_id char(10),
 	timestamp TIMESTAMP,
     is_delayed BOOLEAN DEFAULT false,
     lat char(20),
