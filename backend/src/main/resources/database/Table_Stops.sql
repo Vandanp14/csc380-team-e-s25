@@ -1,4 +1,5 @@
 CREATE TABLE Stops(
     stpid CHAR(6) PRIMARY KEY NOT NULL COMMENT 'Stop ID',
-	stpnm CHAR(30) NOT NULL COMMENT 'Stop Name'
+	stpnm CHAR(30) NOT NULL COMMENT 'Stop Name',
+    CONSTRAINT stp_UNIQUE UNIQUE (stpid,stpnm)
 );
