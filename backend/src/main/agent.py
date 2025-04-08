@@ -1,54 +1,83 @@
 import requests
 import mysql.connector
-import schedule
-import time
+from datetime import datetime
 
-###possible frame for agent 
+# Connect to MySQL
+conn = mysql.connector.connect(
+    host="pi.cs.oswego.edu",
+    user="CSC380_25S_TeamE",
+    password="Bu$Tr@ck3r1000_?",
+    database="CSC380_25S_TeamE"
+)
 
-# Function to fetch data from the API and insert into MySQL
-def fetch_and_insert_data():
-    # API endpoint
-    api_url = "https://api.example.com/data"  # Replace with your API URL
+cursor = conn.cursor()
 
-    try:
-        # Fetch data from the API
-        response = requests.get(api_url)
-        response.raise_for_status()  # Raise an error for bad status codes
-        data = response.json()  # Assuming the API returns JSON
+# API URL
+url = "https://bus-time.centro.org/bustime/api/v3/getpredictions?key=PUZXP7CxWkPaWnvDWdacgiS4M&stpid=15521,15527,15529,16164,16168,16169,16170,16182,16183,16184&format=json"
 
-        # Connect to MySQL
-        db = mysql.connector.connect(
-            host="localhost",
-            user="your_username",  # Replace with your MySQL username
-            password="your_password",  # Replace with your MySQL password
-            database="your_database"  # Replace with your database name
-        )
-        cursor = db.cursor()
+try:
+    response = requests.get(url)
+    response.raise_for_status()
+    data = response.json()
 
-        # Insert data into MySQL
-        for item in data:
-            # Replace 'users' with your table name and adjust columns as needed
-            sql = "INSERT INTO users (name, email, age) VALUES (%s, %s, %s)"
-            values = (item['name'], item['email'], item['age'])  # Adjust keys based on API response
-            cursor.execute(sql, values)
+    if "bustime-response" not in data:
+        print("Unexpected API response format")
 
-        db.commit()  # Commit the transaction
-        print("Data inserted successfully at:", time.strftime("%Y-%m-%d %H:%M:%S"))
+    elif "error" in data["bustime-response"]:
+        error_msg = data["bustime-response"]["error"][0]["msg"]
+        print(f"API Error: {error_msg}")
 
-    except requests.exceptions.RequestException as e:
-        print("Error fetching data from API:", e)
-    except mysql.connector.Error as err:
-        print("MySQL error:", err)
-    finally:
-        if db.is_connected():
-            cursor.close()
-            db.close()
+    elif "prd" in data["bustime-response"]:
+        predictions = data["bustime-response"]["prd"]
 
-# Schedule the task to run every 5 minutes
-schedule.every(5).minutes.do(fetch_and_insert_data)
+        for p in predictions:
+            try:
+                # Convert prediction time to MySQL datetime
+                prdtm = datetime.strptime(p["prdtm"], "%Y%m%d %H:%M")
+                tmpstmp = datetime.strptime(p["tmstmp"], "%Y%m%d %H:%M")
 
-# Keep the script running
-print("Scheduler started. Waiting for the next run...")
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+                # Insert into Routes table
+                sql_routes = "INSERT INTO Routes (rt, des) VALUES (%s, %s)"
+                cursor.execute(sql_routes, (p.get("rt"), p.get("des")))
+
+                # Insert into Stops table
+                sql_stops = "INSERT INTO Stops (stpid, stpnm) VALUES (%s, %s)"
+                cursor.execute(sql_stops, (p.get("stpid"), p.get("stpnm")))
+
+                # Insert into ETA table
+                sql_eta = """
+                    INSERT INTO ETA (stpid, rt, prdtm, prdctdn, tmstmp, dly)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """
+                values_eta = (
+                    p.get("stpid"),
+                    p.get("rt"),
+                    prdtm,
+                    int(p.get("prdctdn", -1)),  # handle "DUE" or missing with -1
+                    tmpstmp,
+                    p.get("dly", False)
+                )
+                cursor.execute(sql_eta, values_eta)
+
+
+            except Exception as e:
+                print(f"Error inserting prediction: {e}")
+
+        conn.commit()
+        print(f"Successfully inserted {len(predictions)} predictions!")
+
+    else:
+        print("No predictions available.")
+
+except requests.exceptions.RequestException as e:
+    print(f"Request failed: {e}")
+except ValueError:
+    print("Failed to parse JSON.")
+except mysql.connector.Error as err:
+    print(f"MySQL Error: {err}")
+finally:
+    if cursor:
+        cursor.close()
+    if conn and conn.is_connected():
+        conn.close()
+
