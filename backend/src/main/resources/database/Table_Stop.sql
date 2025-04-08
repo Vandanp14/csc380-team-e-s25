@@ -1,4 +1,4 @@
 CREATE TABLE stop(
-    stop_id varchar(256) PRIMARY KEY,
-	rt CHAR(10)
+    stpid CHAR(6) PRIMARY KEY NOT NULL COMMENT 'Stop ID',
+	stpnm CHAR(30) NOT NULL COMMENT 'Stop Name'
 );
