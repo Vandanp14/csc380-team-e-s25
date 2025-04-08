@@ -6,5 +6,6 @@ CREATE TABLE ETA(
     prdtm TIMESTAMP NOT NULL COMMENT 'Predicted Arrival Timestamp',
     prdctdn CHAR(3) NOT NULL COMMENT 'Predicted Arrival Countdown in Minutes',
     tmstmp TIMESTAMP NOT NULL COMMENT 'Current Timestamp',
-    dly BOOLEAN NOT NULL COMMENT 'delay status' 
+    dly BOOLEAN NOT NULL COMMENT 'delay status',
+    rtdir VARCHAR(50) COMMENT 'route direction'
 );
