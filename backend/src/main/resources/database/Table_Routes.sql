@@ -1,4 +1,4 @@
-CREATE TABLE route(
+CREATE TABLE Routes(
 	rt CHAR(10) PRIMARY KEY NOT NULL COMMENT 'Route ID',
     des CHAR(30) NOT NULL COMMENT 'Route Name' 
 );
