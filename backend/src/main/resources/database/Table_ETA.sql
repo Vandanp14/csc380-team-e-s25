@@ -1,7 +1,7 @@
 CREATE TABLE ETA(
 	stpid CHAR(6) NOT NULL,
     rt CHAR(10) NOT NULL,
-    FOREIGN KEY (stpid) REFERENCES Stops(stpid),
+    FOREIGN KEY (stpid) REFERENCES Stops(stupid),
     FOREIGN KEY (rt) REFERENCES Routes(rt),
     prdtm TIMESTAMP NOT NULL COMMENT 'Predicted Arrival Timestamp',
     prdctdn INT NOT NULL COMMENT 'Predicted Arrival Countdown in Minutes. DUE = 0',
