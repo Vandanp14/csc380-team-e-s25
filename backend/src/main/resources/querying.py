@@ -12,7 +12,11 @@ conn = mysql.connector.connect(
 cursor = conn.cursor()
 
 cursor.execute(
-    "SELECT Stops.stpnm,Routes.des,prdtm,prdctdn,tmpstmp,dly,rtdir FROM ETA INNER JOIN Routes ON ETA.rt=Routes.rt INNER JOIN Stops ON ETA.stpid=Stops.stpid LIMIT 1"
+    """SELECT Stops.stpnm,Routes.des,prdtm,prdctdn,tmpstmp,dly,rtdir 
+    FROM ETA 
+    INNER JOIN Routes ON ETA.rt=Routes.rt 
+    INNER JOIN Stops ON ETA.stpid=Stops.stpid 
+    LIMIT 1"""
 )
 
 myresult = cursor.fetchall()
