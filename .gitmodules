@@ -1,0 +1,3 @@
+[submodule "frontend/csc380-team-e-s25"]
+	path = frontend/csc380-team-e-s25
+	url = https://github.com/emhalsey/csc380-team-e-s25.git
