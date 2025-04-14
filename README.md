@@ -2,5 +2,10 @@
 
 Centro Bus Tracker App
 
-Built on Python, MySQL, and React.js.
+Built on Python, MySQL, and React.js.  
 
+Modules:
+
+- mysql-connector
+- requests
+- datetime
