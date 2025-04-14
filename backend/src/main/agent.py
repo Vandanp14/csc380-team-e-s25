@@ -1,6 +1,7 @@
 import requests
 import mysql.connector
 from datetime import datetime
+import time
 from mysql.connector import Error
 
 
@@ -105,7 +106,7 @@ def fetch_and_insert_predictions(url, cursor, conn):
                     INSERT INTO ETA (stpid, rt, prdtm, prdctdn, tmstmp, dly, rtdir)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """
-                # Handle 'prdctdn' which may be 'DUE'=0 and 'MISSING'=-1
+                # Handle 'prdctdn' and 0 means 'DUE' and -1 means 'MISSING'
                 prdctdn_raw = p.get("prdctdn", "-1")
                 prdctdn = 0 if prdctdn_raw == "DUE" else -1 if prdctdn_raw == "MISSING" else int(prdctdn_raw)
 
@@ -129,7 +130,7 @@ def fetch_and_insert_predictions(url, cursor, conn):
         return count
 
     except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
+        print(f"Request failed: {e}")#displays because of what cause
         return 0
     except ValueError as e:
         print(f"Failed to parse JSON: {e}")
@@ -140,7 +141,6 @@ def process_multiple_urls(urls):
     conn = connect_to_db()
     if not conn:
         return
-
     cursor = None
     try:
         cursor = conn.cursor()
@@ -157,8 +157,14 @@ def process_multiple_urls(urls):
         if conn and conn.is_connected():
             conn.close()
 
+def is_operating_time(): #ensure that it does not run at 11 PM to 5AM
+    current_time = datetime.now().time()
+    start_time = datetime.strptime("05:00:00", "%H:%M:%S").time()
+    end_time = datetime.strptime("23:00:00", "%H:%M:%S").time()
+    return start_time <= current_time <= end_time
 
 def main():
+    # List of URLs
     url_osw10_1 = "https://bus-time.centro.org/bustime/api/v3/getpredictions?key=PUZXP7CxWkPaWnvDWdacgiS4M&stpid=15521,15527,15529,16164,16168,16169,16170,16182,16183,16184&format=json&rt=OSW10"
     url_osw10_2 = "https://bus-time.centro.org/bustime/api/v3/getpredictions?key=PUZXP7CxWkPaWnvDWdacgiS4M&stpid=16185,17539,17968,17969,9679,9682&format=json&rt=OSW10"
     url_osw11_1 = "https://bus-time.centro.org/bustime/api/v3/getpredictions?key=PUZXP7CxWkPaWnvDWdacgiS4M&stpid=15521,15534,16086,16160,17941,18368,9679,9682,9684&format=json&rt=OSW11"
@@ -167,12 +173,18 @@ def main():
     url_osw2A_1 = "https://bus-time.centro.org/bustime/api/v3/getpredictions?key=PUZXP7CxWkPaWnvDWdacgiS4M&stpid=15521,16023,16025,3505,3548,3553,3563,3569,3581,9679&format=json&rt=OSW2A"
     url_osw2A_2 = "https://bus-time.centro.org/bustime/api/v3/getpredictions?key=PUZXP7CxWkPaWnvDWdacgiS4M&stpid=9682,9684,9686&format=json&rt=OSW2A"
 
-    # List of URLs
     urls = [url_osw10_1, url_osw10_2, url_osw11_1, url_osw1A_1, url_osw1A_2, url_osw2A_1, url_osw2A_2]
 
-    # Process the URLs
-    process_multiple_urls(urls)
+    while True:
+        if is_operating_time():
+            process_multiple_urls(urls)
+            current_time=datetime.now().time()
+            print(f"Cureent time: {current_time}, Waiting for 1 minute...")
+        else:
+            print("Bus does not run between 11 PM and 5 AM. Sleeping until 5 AM...")
 
+        # Sleep for 1 min
+        time.sleep(60)
 
 if __name__ == "__main__":
     main()
