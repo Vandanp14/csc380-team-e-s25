@@ -56,7 +56,6 @@ def fetch_and_insert_predictions(url, cursor, conn):
         if "error" in data["bustime-response"]:
             error_msg = data["bustime-response"]["error"][0]["msg"]
             print(f"API Error: {error_msg}")
-            return 0
 
         if "prd" not in data["bustime-response"]:
             print("No predictions available.")
