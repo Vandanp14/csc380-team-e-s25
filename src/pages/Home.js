@@ -242,12 +242,7 @@ const Home = () => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        // TODO: Remove this simulated delay when connecting to backend API
         await new Promise(resolve => setTimeout(resolve, 1000)); // simulate delay
-        // TODO: Replace the below hardcoded bus routes with real backend API query
-        // Example: const response = await fetch('https://your-backend-url/api/busPredictions');
-        // const fetchedRoutes = await response.json();
-        // setRoutes(fetchedRoutes);
         const fetchedRoutes = [
           { id: 'OSW10', name: 'OSW10 Blue Route', status: 'on-time', nextArrival: '5 min' },
           { id: 'OSW11', name: 'OSW11 Green Route', status: 'delayed', nextArrival: '12 min' },
