@@ -146,7 +146,7 @@ def process_multiple_urls(urls):
         for url in urls:
             print(f"Processing URL: {url}")
             count = fetch_and_insert_predictions(url, cursor, conn)
-            print(f"Successfully processed {count} predictions from {url}")
+            print(f"Successfully processed {count} predictions")
 
     except Exception as e:
         print(f"Error in process_multiple_urls: {e}")
