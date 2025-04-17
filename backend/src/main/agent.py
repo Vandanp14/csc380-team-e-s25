@@ -163,6 +163,7 @@ def is_operating_time(): #ensure that it does not run at 11 PM to 5AM
     return start_time <= current_time <= end_time
 
 def main():
+
     # List of URLs
     url_osw10_1 = "https://bus-time.centro.org/bustime/api/v3/getpredictions?key=PUZXP7CxWkPaWnvDWdacgiS4M&stpid=15521,15527,15529,16164,16168,16169,16170,16182,16183,16184&format=json&rt=OSW10"
     url_osw10_2 = "https://bus-time.centro.org/bustime/api/v3/getpredictions?key=PUZXP7CxWkPaWnvDWdacgiS4M&stpid=16185,17539,17968,17969,9679,9682&format=json&rt=OSW10"
