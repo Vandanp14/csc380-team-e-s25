@@ -1,22 +1,25 @@
 import requests
-import mysql.connector
+from mysql.connector import connect
 from datetime import datetime
 
 # Connect to MySQL
-conn = mysql.connector.connect(
+conn = connect(
     host="pi.cs.oswego.edu",
     user="CSC380_25S_TeamE",
     password="Bu$Tr@ck3r1000_?",
     database="CSC380_25S_TeamE"
 )
-cursor = conn.cursor()
+c = conn.cursor()
 
-cursor.execute(
-    """SELECT Stops.stpnm,Routes.rt,Routes.des,prdtm,prdctdn,tmstmp,dly,rtdir 
-    FROM ETA 
-    INNER JOIN Routes ON ETA.rt=Routes.rt 
-    INNER JOIN Stops ON ETA.stpid=Stops.stupid 
-    LIMIT 1"""
-)
+rt = input("Enter route code: ")
+stpnm = input("Enter stop name: ")
 
-print(cursor.fetchall())
+c.execute("SELECT Stops.", stpnm,
+          ",Routes.",rt,",Routes.des,"
+          "prdtm,prdctdn,tmstmp,dly,rtdir"
+          "FROM ETA INNER JOIN Routes ON ETA.rt=Routes.rt "
+          "INNER JOIN Stops ON ETA.stpid=Stops.stupid "
+          "LIMIT 1"
+          )
+
+print(c.fetchall())
