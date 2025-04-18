@@ -1,6 +1,5 @@
 import requests
 from mysql.connector import connect
-from datetime import datetime
 
 # Connect to MySQL
 conn = connect(
