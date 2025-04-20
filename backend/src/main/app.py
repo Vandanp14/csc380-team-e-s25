@@ -16,18 +16,18 @@ def get_connection():
 @app.route('/prediction', methods=['GET'])
 def get_prediction():
     rt = request.args.get('route')
-    stpnm = request.args.get('stop')
+    stpid = request.args.get('stop')
 
-    if not rt or not stpnm:
+    if not rt or not stpid:
         return jsonify({'error': 'Missing route or stop'}), 400
 
     query = """
-        SELECT Stops.stpnm, Routes.rt, Routes.des,
+        SELECT Stops.stupid, Routes.rt, Routes.des,
                prdtm, prdctdn, tmstmp, dly, rtdir
         FROM ETA
         INNER JOIN Routes ON ETA.rt = Routes.rt
         INNER JOIN Stops ON ETA.stpid = Stops.stupid
-        WHERE Routes.rt = %s AND Stops.stpnm = %s
+        WHERE Routes.rt = %s AND Stops.stupid = %s
         ORDER BY tmstmp DESC
         LIMIT 1
     """
@@ -35,8 +35,8 @@ def get_prediction():
     try:
         with get_connection() as conn:
             with conn.cursor() as cursor:
-                cursor.execute(query, (rt, stpnm))
-                result = cursor.fetchone()
+                cursor.execute(query, (rt, stpid))
+                result = cursor.fetchall()
                 if result:
                     return jsonify(result)
                 else:
