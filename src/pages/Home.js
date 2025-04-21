@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
 import Navbar from '../components/Navbar';
 import { FaSpinner } from 'react-icons/fa';
-import { getPrediction } from '../services/apiService';
+import { getRoutes, getPrediction } from '../services/apiService';
 
 const HomeContainer = styled.div`
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
@@ -243,28 +243,39 @@ const Home = () => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        const routeConfigs = [
-          { id: 'OSW10', name: 'OSW10 Blue Route', stopId: '15521' },
-          { id: 'OSW11', name: 'OSW11 Green Route', stopId: '16160' },
-          { id: 'OSW1A', name: 'OSW1A Walmart via 104', stopId: '3581' },
-          { id: 'OSW2A', name: 'OSW2A College via 104', stopId: '15517' },
-        ];
-
-        const fetchedRoutes = await Promise.all(routeConfigs.map(async (route) => {
-          try {
-            const predictionData = await getPrediction(route.id, route.stopId);
-            const nextArrival = predictionData.length > 0
-              ? `${predictionData[0].prdctdn} min`
-              : 'No buses soon';
-            return { ...route, status: 'on-time', nextArrival };
-          } catch (error) {
-            return { ...route, status: 'unknown', nextArrival: 'Coming Soon' };
-          }
-        }));
-
+        let routesList = await getRoutes();
+        console.log('Fetched routesList:', routesList);
+ 
+        if (!routesList || routesList.length === 0) {
+          routesList = [
+            { routeId: 'OSW10', routeName: '10 Blue Route', defaultStopId: '15521' }
+          ];
+        }
+ 
+        console.log('Using routesList:', routesList);
+ 
+        const fetchedRoutes = await Promise.all(
+          routesList.map(async (route) => {
+            try {
+              let stopId = route.defaultStopId || route.stops?.[0]?.stopId || '15521';
+              console.log(`Fetching prediction for Route ${route.routeId} Stop ${stopId}`);
+              const predictionData = await getPrediction(route.routeId, stopId);
+              console.log('Prediction Data:', predictionData);
+ 
+              const nextArrival = predictionData.length > 0
+                ? `${predictionData[0].prdctdn} min`
+                : 'No buses soon';
+              return { ...route, status: 'on-time', nextArrival };
+            } catch (error) {
+              console.error('Error fetching prediction for route:', route.routeId, error);
+              return { ...route, status: 'unknown', nextArrival: 'Coming Soon' };
+            }
+          })
+        );
+ 
         setRoutes(fetchedRoutes);
-      } catch (err) {
-        console.error('Error fetching routes:', err);
+      } catch (error) {
+        console.error('Error fetching routes:', error);
       } finally {
         setRoutesLoading(false);
       }
@@ -360,12 +371,12 @@ const Home = () => {
           ) : (
             routes.map(route => (
               <RouteCard
-                key={route.id}
-                onClick={() => navigate(`/route/${route.id}`)}
+                key={route.routeId}
+                onClick={() => navigate(`/route/${route.routeId}`)}
                 status={route.status}
               >
                 <RouteHeader>
-                  <RouteName>{route.name}</RouteName>
+                  <RouteName>{route.routeName}</RouteName>
                   <StatusIcon status={route.status}>
                     {getStatusIcon(route.status)}
                   </StatusIcon>

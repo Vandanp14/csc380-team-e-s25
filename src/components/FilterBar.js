@@ -1,8 +1,9 @@
 // src/components/FilterBar.js
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import TripContext from '../TripContext';
+import { getStops } from '../services/apiService';
 
 const FilterBarContainer = styled.div`
   background-color:hsl(39, 96.20%, 69.00%);
@@ -55,22 +56,28 @@ const FilterBar = ({ onSearch }) => {
   const navigate = useNavigate();
   const { setTrip } = useContext(TripContext);
 
-  // Dummy options—replace with live data when available.
   const [localTrip, setLocalTrip] = useState({ route: '', direction: '', stop: '' });
+  const [stops, setStops] = useState([]);
 
   const routes = ['OSW10', 'OSW1A', 'OSW11', 'OSW1B', 'OSW1C', 'OSW1D'];
   const directions = ['From Campus', 'From Downtown'];
 
-  const routeStopsMap = {
-    OSW10: ['Campus Center', 'Centennial Drive' ,'Penfield Library'],
-    OSW1A: ['Romney Lot', 'Laker Hall'],
-    OSW11: ['Walmart', 'Laker Hall'],
-    OSW1B: ['Campus Center', 'Romney Lot'],
-    OSW1C: ['Romney Lot', 'Walmart'],
-    OSW1D: ['Laker Hall', 'Campus Center'],
-  };
-
-  const availableStops = routeStopsMap[localTrip.route] || [];
+  useEffect(() => {
+    const fetchStops = async () => {
+      if (localTrip.route) {
+        try {
+          const stopsList = await getStops(localTrip.route);
+          setStops(stopsList);
+        } catch (error) {
+          console.error('Error fetching stops:', error);
+          setStops([]);
+        }
+      } else {
+        setStops([]);
+      }
+    };
+    fetchStops();
+  }, [localTrip.route]);
 
   const handleSearch = () => {
     if (onSearch) {
@@ -113,8 +120,8 @@ const FilterBar = ({ onSearch }) => {
         disabled={!localTrip.route}
       >
         <option value="">Select Stop</option>
-        {availableStops.map((s) => (
-          <option key={s} value={s}>{s}</option>
+        {stops.map((s) => (
+          <option key={s.stopId} value={s.stopId}>{s.stopName}</option>
         ))}
       </Select>
       <Button onClick={handleSearch}>Search</Button>
