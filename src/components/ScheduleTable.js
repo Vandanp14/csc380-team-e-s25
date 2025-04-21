@@ -76,42 +76,21 @@ const NoScheduleMessage = styled.p`
   font-size: 1.1rem;
 `;
 
-const scheduleData = {
-  "OSW10": {
-    title: "OSW10 SUNY Oswego Blue Route - Oswego - From Campus (Weekdays)",
-    stops: [
-      "SUNY Oswego Campus Center",
-      "Rudolph St & Centennial Dr",
-      "SUNY Oswego New Campus",
-      "SUNY Oswego The Village Residence"
-    ],
-    rows: [
-      ["07:46 AM", "07:48 AM", "07:52 AM", "07:56 AM"],
-      ["08:20 AM", "08:22 AM", "08:26 AM", "08:30 AM"],
-      ["08:40 AM", "08:42 AM", "08:46 AM", "08:50 AM"],
-      ["09:00 AM", "09:02 AM", "09:06 AM", "09:10 AM"],
-      ["09:20 AM", "09:22 AM", "09:26 AM", "09:30 AM"],
-      ["09:40 AM", "09:42 AM", "09:46 AM", "09:50 AM"],
-      ["10:00 AM", "10:02 AM", "10:06 AM", "10:10 AM"],
-      ["10:20 AM", "10:22 AM", "10:26 AM", "10:30 AM"],
-      ["10:40 AM", "10:42 AM", "10:46 AM", "10:50 AM"],
-      ["11:00 AM", "11:02 AM", "11:06 AM", "11:10 AM"]
-    ]
+function ScheduleTable({ scheduleData, loading }) {
+  if (loading) {
+    return <NoScheduleMessage>Loading schedule...</NoScheduleMessage>;
   }
-};
 
-function ScheduleTable({ route }) {
-  const schedule = scheduleData[route];
-
-  if (!schedule) {
+  if (!scheduleData || scheduleData.length === 0) {
     return <NoScheduleMessage>No schedule available for this route.</NoScheduleMessage>;
   }
 
-  const { title, stops, rows } = schedule;
+  const stops = scheduleData.stops || [];
+  const rows = scheduleData.rows || [];
 
   return (
     <TableWrapper>
-      <TableTitle>{title}</TableTitle>
+      <TableTitle>Scheduled Arrival Times</TableTitle>
       <StyledTable>
         <Caption>Scheduled Arrival Times</Caption>
         <thead>

@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import styled from 'styled-components';
 import TripContext from '../TripContext';
 import NextBusCard from '../components/NextBusCard';
+import { getPrediction } from '../services/apiService';
 
 const Container = styled.div`
   padding: 1rem;
@@ -50,12 +51,47 @@ function RouteDetail() {
   const { trip } = useContext(TripContext);
   const [direction, setDirection] = useState('');
   const [stop, setStop] = useState('');
+  const [nextArrivals, setNextArrivals] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Optional: Pre-fill defaults if needed from trip context
     if (trip.direction) setDirection(trip.direction);
     if (trip.stop) setStop(trip.stop);
   }, [trip]);
+
+  useEffect(() => {
+    const fetchPrediction = async () => {
+      if (direction && stop) {
+        setLoading(true);
+        try {
+          // Replace the stop mapping below with your actual stop ID mapping
+          const stopMapping = {
+            "SUNY Oswego Campus Center": "15521",
+            "Rudolph St & Centennial Dr": "16168",
+          };
+          const stopId = stopMapping[stop];
+          if (!stopId) {
+            console.error('Unknown stop selected');
+            return;
+          }
+          const predictionData = await getPrediction(routeId, stopId);
+          if (predictionData.length > 0) {
+            setNextArrivals([`${predictionData[0].prdctdn} min`]);
+          } else {
+            setNextArrivals(["No buses soon"]);
+          }
+        } catch (error) {
+          console.error('Error fetching prediction:', error);
+          setNextArrivals(["Error loading predictions"]);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchPrediction();
+  }, [direction, stop, routeId]);
 
   return (
     <div>
@@ -85,7 +121,7 @@ function RouteDetail() {
           route={routeId}
           direction={direction}
           stop={stop}
-          nextArrivals={['8:15 AM', '8:45 AM']} // still dummy, to be replaced by backend data
+          nextArrivals={loading ? ['Loading...'] : nextArrivals}
         />
 
         <Card>

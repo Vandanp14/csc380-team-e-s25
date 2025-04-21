@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
 import Navbar from '../components/Navbar';
 import { FaSpinner } from 'react-icons/fa';
+import { getPrediction } from '../services/apiService';
 
 const HomeContainer = styled.div`
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
@@ -242,13 +243,25 @@ const Home = () => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // simulate delay
-        const fetchedRoutes = [
-          { id: 'OSW10', name: 'OSW10 Blue Route', status: 'on-time', nextArrival: '5 min' },
-          { id: 'OSW11', name: 'OSW11 Green Route', status: 'delayed', nextArrival: '12 min' },
-          { id: 'OSW1A', name: 'OSW1A Walmart via 104', status: 'approaching', nextArrival: '2 min' },
-          { id: 'OSW2A', name: 'OSW2A College via 104', status: 'on-time', nextArrival: '8 min' },
+        const routeConfigs = [
+          { id: 'OSW10', name: 'OSW10 Blue Route', stopId: '15521' },
+          { id: 'OSW11', name: 'OSW11 Green Route', stopId: '16160' },
+          { id: 'OSW1A', name: 'OSW1A Walmart via 104', stopId: '3581' },
+          { id: 'OSW2A', name: 'OSW2A College via 104', stopId: '15517' },
         ];
+
+        const fetchedRoutes = await Promise.all(routeConfigs.map(async (route) => {
+          try {
+            const predictionData = await getPrediction(route.id, route.stopId);
+            const nextArrival = predictionData.length > 0
+              ? `${predictionData[0].prdctdn} min`
+              : 'No buses soon';
+            return { ...route, status: 'on-time', nextArrival };
+          } catch (error) {
+            return { ...route, status: 'unknown', nextArrival: 'Coming Soon' };
+          }
+        }));
+
         setRoutes(fetchedRoutes);
       } catch (err) {
         console.error('Error fetching routes:', err);
