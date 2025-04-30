@@ -1,9 +1,9 @@
 // src/components/FilterBar.js
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import TripContext from '../TripContext';
-import { getStops } from '../services/apiService';
+import busData from '../Data/busData';
 
 const FilterBarContainer = styled.div`
   background-color:hsl(39, 96.20%, 69.00%);
@@ -57,27 +57,10 @@ const FilterBar = ({ onSearch }) => {
   const { setTrip } = useContext(TripContext);
 
   const [localTrip, setLocalTrip] = useState({ route: '', direction: '', stop: '' });
-  const [stops, setStops] = useState([]);
 
-  const routes = ['OSW10', 'OSW1A', 'OSW11', 'OSW1B', 'OSW1C', 'OSW1D'];
-  const directions = ['From Campus', 'From Downtown'];
-
-  useEffect(() => {
-    const fetchStops = async () => {
-      if (localTrip.route) {
-        try {
-          const stopsList = await getStops(localTrip.route);
-          setStops(stopsList);
-        } catch (error) {
-          console.error('Error fetching stops:', error);
-          setStops([]);
-        }
-      } else {
-        setStops([]);
-      }
-    };
-    fetchStops();
-  }, [localTrip.route]);
+  const selectedRoute = busData.find(r => r.routeId === localTrip.route);
+  const stops = selectedRoute ? selectedRoute.stops : [];
+  const directions = selectedRoute ? selectedRoute.directions : [];
 
   const handleSearch = () => {
     if (onSearch) {
@@ -93,12 +76,12 @@ const FilterBar = ({ onSearch }) => {
       <Select
         value={localTrip.route}
         onChange={(e) =>
-          setLocalTrip({ ...localTrip, route: e.target.value })
+          setLocalTrip({ ...localTrip, route: e.target.value, direction: '', stop: '' })
         }
       >
         <option value="">Select Route</option>
-        {routes.map((r) => (
-          <option key={r} value={r}>{r}</option>
+        {busData.map((r) => (
+          <option key={r.routeId} value={r.routeId}>{r.routeId}</option>
         ))}
       </Select>
       <Select
@@ -106,6 +89,7 @@ const FilterBar = ({ onSearch }) => {
         onChange={(e) =>
           setLocalTrip({ ...localTrip, direction: e.target.value })
         }
+        disabled={!localTrip.route}
       >
         <option value="">Select Direction</option>
         {directions.map((d) => (
