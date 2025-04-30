@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import TripContext from '../TripContext';
 import NextBusCard from '../components/NextBusCard';
 import { getPrediction } from '../services/apiService';
+import busData from '../Data/busData';
 
 const Container = styled.div`
   padding: 1rem;
@@ -54,6 +55,8 @@ function RouteDetail() {
   const [nextArrivals, setNextArrivals] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const routeInfo = busData.find((r) => r.routeId === routeId);
+
   useEffect(() => {
     // Optional: Pre-fill defaults if needed from trip context
     if (trip.direction) setDirection(trip.direction);
@@ -65,17 +68,19 @@ function RouteDetail() {
       if (direction && stop) {
         setLoading(true);
         try {
-          // Replace the stop mapping below with your actual stop ID mapping
-          const stopMapping = {
-            "SUNY Oswego Campus Center": "15521",
-            "Rudolph St & Centennial Dr": "16168",
-          };
-          const stopId = stopMapping[stop];
-          if (!stopId) {
-            console.error('Unknown stop selected');
+          if (!routeInfo) {
+            console.error('Unknown route');
+            setNextArrivals(["No route data"]);
             return;
           }
-          const predictionData = await getPrediction(routeId, stopId);
+          const stopInfo = routeInfo.stops.find((s) => s.stopName === stop);
+          if (!stopInfo) {
+            console.error('Unknown stop selected');
+            setNextArrivals(["No stop data"]);
+            return;
+          }
+          console.log("Fetching prediction for", routeId, stopInfo.stopId);
+          const predictionData = await getPrediction(routeId, stopInfo.stopId);
           if (predictionData.length > 0) {
             setNextArrivals([`${predictionData[0].prdctdn} min`]);
           } else {
@@ -91,7 +96,7 @@ function RouteDetail() {
     };
 
     fetchPrediction();
-  }, [direction, stop, routeId]);
+  }, [direction, stop, routeId, routeInfo]);
 
   return (
     <div>
@@ -103,17 +108,25 @@ function RouteDetail() {
           <Label>Select Direction</Label>
           <Dropdown value={direction} onChange={(e) => setDirection(e.target.value)}>
             <option value="">Select Direction</option>
-            <option value="From Campus">From Campus</option>
-            <option value="To Campus">To Campus</option>
-            {/* Add other directions if needed */}
+            {Array.isArray(routeInfo?.directions) && routeInfo.directions.length > 0 ? (
+              routeInfo.directions.map((dir) => (
+                <option key={dir} value={dir}>{dir}</option>
+              ))
+            ) : (
+              <option disabled>No directions available</option>
+            )}
           </Dropdown>
 
           <Label>Select Stop</Label>
           <Dropdown value={stop} onChange={(e) => setStop(e.target.value)}>
             <option value="">Select Stop</option>
-            <option value="SUNY Oswego Campus Center">SUNY Oswego Campus Center</option>
-            <option value="Rudolph St & Centennial Dr">Rudolph St & Centennial Dr</option>
-            {/* Add other stops dynamically later */}
+            {Array.isArray(routeInfo?.stops) && routeInfo.stops.length > 0 ? (
+              routeInfo.stops.map((s) => (
+                <option key={s.stopId} value={s.stopName}>{s.stopName}</option>
+              ))
+            ) : (
+              <option disabled>No stops available</option>
+            )}
           </Dropdown>
         </Card>
 

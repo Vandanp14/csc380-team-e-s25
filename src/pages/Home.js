@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import styled, { keyframes, css } from 'styled-components';
 import Navbar from '../components/Navbar';
 import { FaSpinner } from 'react-icons/fa';
-import { getRoutes, getPrediction } from '../services/apiService';
+import { busRoutes } from '../Data/busData';
+import { getPrediction } from '../services/apiService';
 
 const HomeContainer = styled.div`
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
@@ -243,7 +244,7 @@ const Home = () => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        let routesList = await getRoutes();
+        let routesList = busRoutes;
         console.log('Fetched routesList:', routesList);
  
         if (!routesList || routesList.length === 0) {
