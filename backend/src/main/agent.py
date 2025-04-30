@@ -179,7 +179,7 @@ def main():
         if is_operating_time():
             process_multiple_urls(urls)
             current_time=datetime.now().time()
-            print(f"Cureent time: {current_time}, Waiting for 1 minute...")
+            print(f"Current time: {current_time}, Waiting for 1 minute...")
         else:
             print("Bus does not run between 11 PM and 5 AM. Sleeping until 5 AM...")
 
