@@ -2,7 +2,7 @@ import pymysql
 import pandas as pd
 from datetime import datetime, timedelta
 
-def get_latest_5_avg_prediction(route, stop_id, hour, minute):
+def get_latest_7_avg_prediction(route, stop_id, hour, minute):
     try:
         conn = pymysql.connect(
             host="pi.cs.oswego.edu",
@@ -26,7 +26,7 @@ def get_latest_5_avg_prediction(route, stop_id, hour, minute):
                 ) t2 ON t1.tmstmp = t2.tmstmp AND t1.prdtm = t2.earliest_prdtm
                 WHERE t1.rt = %s AND t1.stpid = %s
                 ORDER BY t1.tmstmp DESC
-                LIMIT 5;
+                LIMIT 7;
             """
             cursor.execute(query, (route, stop_id, exact_time, route, stop_id))
             results = cursor.fetchall()
@@ -60,4 +60,4 @@ def get_latest_5_avg_prediction(route, stop_id, hour, minute):
 
 
 # Example usage — only include exact matches of 7:40 AM
-get_latest_5_avg_prediction("OSW10", 17969, 8, 11)
+get_latest_7_avg_prediction("OSW10", 17969, 8, 8)
