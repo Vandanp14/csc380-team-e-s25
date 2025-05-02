@@ -133,7 +133,7 @@ def avg_prediction():
                 'avg_prediction': avg_time.strftime("%I:%M %p")
             })
         else:
-            return jsonify({'message': 'No data found for the given time'}), 404
+            return jsonify({'message': 'No Bus Scheduled For A While. Please Check Official CENTRO Bus Schedule'}), 404
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
