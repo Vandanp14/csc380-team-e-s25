@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
 import pymysql
 from flask_cors import CORS
+from datetime import datetime
+import pytz  #
+
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
 
@@ -14,7 +17,6 @@ def get_connection():
         database="CSC380_25S_TeamE",
         cursorclass=pymysql.cursors.DictCursor
     )
-
 @app.route('/prediction', methods=['GET'])
 def get_prediction():
     rt = request.args.get('route')
@@ -23,7 +25,6 @@ def get_prediction():
     if not rt or not stpid:
         return jsonify({'error': 'Missing route or stop'}), 400
 
-    # Updated query: fetch earliest prdtm for the most recent tmstmp
     query = """
         SELECT ETA.rt, ETA.stpid, MIN(ETA.prdtm) AS prdtm, ETA.prdctdn, ETA.tmstmp, ETA.dly,
                Routes.des, ETA.rtdir
@@ -45,12 +46,23 @@ def get_prediction():
             with conn.cursor() as cursor:
                 cursor.execute(query, (rt, stpid, rt, stpid))
                 result = cursor.fetchone()
+
                 if result:
+                    # Convert times to Eastern and 12-hour format
+                    if 'prdtm' in result and result['prdtm']:
+                        dt = result['prdtm']
+                        result['prdtm'] = dt.strftime("%I:%M %p")  # 12-hour format, no timezone conversion
+
+                    if 'tmstmp' in result and result['tmstmp']:
+                        dt = result['tmstmp']
+                        result['tmstmp'] = dt.strftime("%I:%M %p")
+
                     return jsonify(result)
+
                 else:
                     return jsonify({'message': 'No data found'}), 404
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 if __name__ == '__main__':
     app.run(debug=True)
