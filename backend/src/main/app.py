@@ -5,8 +5,7 @@ from flask_cors import CORS
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000"])
-
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 # Connect to MySQL
 def get_connection():

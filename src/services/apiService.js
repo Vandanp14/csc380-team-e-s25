@@ -9,6 +9,7 @@ export async function getRoutes() {
 export async function getPrediction(route, stop) {
   try {
     const response = await fetch(`${BACKEND_URL}/prediction?route=${route}&stop=${stop}`);
+    
     if (!response.ok) {
       throw new Error('Failed to fetch prediction');
     }
