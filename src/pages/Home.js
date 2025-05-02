@@ -7,11 +7,26 @@ import { FaSpinner } from 'react-icons/fa';
 import { busRoutes } from '../Data/busData';
 import { getPrediction } from '../services/apiService';
 
+
+
 const HomeContainer = styled.div`
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
   min-height: 100vh;
   position: relative;
 `;
+const Disclaimer = styled.div`
+  background-color: #f8f9fa;
+  color: #333;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+  border-top: 1px solid #ddd;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+`;
+
 
 const HeroSection = styled.div`
   height: 300px;
@@ -138,8 +153,8 @@ const RouteName = styled.h3`
 `;
 
 const StatusIcon = styled.div`
-  width: 28px;
-  height: 28px;
+  width: 120px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -245,35 +260,43 @@ const Home = () => {
     const fetchRoutes = async () => {
       try {
         let routesList = busRoutes;
-        console.log('Fetched routesList:', routesList);
- 
+  
         if (!routesList || routesList.length === 0) {
           routesList = [
             { routeId: 'OSW10', routeName: '10 Blue Route', defaultStopId: '15521' }
           ];
         }
- 
-        console.log('Using routesList:', routesList);
- 
+  
         const fetchedRoutes = await Promise.all(
           routesList.map(async (route) => {
             try {
               let stopId = route.defaultStopId || route.stops?.[0]?.stopId || '15521';
-              console.log(`Fetching prediction for Route ${route.routeId} Stop ${stopId}`);
               const predictionData = await getPrediction(route.routeId, stopId);
-              console.log('Prediction Data:', predictionData);
- 
+  
+              // Check if prediction data is available
               const nextArrival = predictionData.length > 0
                 ? `${predictionData[0].prdctdn} min`
                 : 'No buses soon';
-              return { ...route, status: 'on-time', nextArrival };
+  
+              // Prediction data fields
+              const predictedTime = predictionData[0].prdctdn; // Predicted time in minutes
+              const isDelayed = predictionData[0].dly > 0; // Check if 'dly' is greater than 0 to classify as delayed
+  
+              // Determine bus status based on prediction data
+              let status = 'on-time'; // Default status is 'on-time'
+              if (isDelayed) {
+                status = 'delayed'; // Bus is delayed if dly > 0
+              } else if (predictedTime <= 2) {
+                status = 'approaching'; // If predicted arrival time is very close (approaching)
+              }
+  
+              return { ...route, status, nextArrival };
             } catch (error) {
-              console.error('Error fetching prediction for route:', route.routeId, error);
               return { ...route, status: 'unknown', nextArrival: 'Coming Soon' };
             }
           })
         );
- 
+  
         setRoutes(fetchedRoutes);
       } catch (error) {
         console.error('Error fetching routes:', error);
@@ -281,9 +304,10 @@ const Home = () => {
         setRoutesLoading(false);
       }
     };
-
+  
     fetchRoutes();
   }, []);
+  
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -320,11 +344,11 @@ const Home = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'on-time':
-        return '✓';
+        return 'On-time';
       case 'delayed':
-        return '⚠';
+        return 'Delayed';
       case 'approaching':
-        return '→';
+        return 'Approaching';
       default:
         return '?';
     }
@@ -383,7 +407,7 @@ const Home = () => {
                   </StatusIcon>
                 </RouteHeader>
                 <NextArrival>
-                  <TimeIcon>🕒</TimeIcon>
+                  <TimeIcon></TimeIcon>
                   Next arrival: {route.nextArrival}
                 </NextArrival>
               </RouteCard>
@@ -414,6 +438,10 @@ const Home = () => {
       <FloatingActionButton onClick={() => navigate('/tracker')}>
         🚌
       </FloatingActionButton>
+      <Disclaimer>
+  Arrival predictions are based on estimates and may vary. Users should account for possible delays.
+</Disclaimer>
+
     </HomeContainer>
   );
 };

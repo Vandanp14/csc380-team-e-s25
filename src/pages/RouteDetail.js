@@ -50,53 +50,59 @@ const Label = styled.label`
 function RouteDetail() {
   const { routeId } = useParams();
   const { trip } = useContext(TripContext);
+
   const [direction, setDirection] = useState('');
-  const [stop, setStop] = useState('');
+  const [stopId, setStopId] = useState('');
   const [nextArrivals, setNextArrivals] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [stopsByDirection, setStopsByDirection] = useState({});
 
   const routeInfo = busData.find((r) => r.routeId === routeId);
 
   useEffect(() => {
-    // Optional: Pre-fill defaults if needed from trip context
+    if (!routeInfo) return;
+
+    const allStops = routeInfo.stops || [];
+    const mid = Math.ceil(allStops.length / 2);
+
+    const simulated = {
+      'TO CAMPUS': allStops.slice(0, mid),
+      'FROM CAMPUS': allStops.slice(mid),
+    };
+
+    setStopsByDirection(simulated);
+  }, [routeInfo]);
+
+  useEffect(() => {
+    // Autofill from TripContext if available
     if (trip.direction) setDirection(trip.direction);
-    if (trip.stop) setStop(trip.stop);
+    if (trip.stopId) setStopId(trip.stopId);
   }, [trip]);
 
   useEffect(() => {
     const fetchPrediction = async () => {
-      if (direction && stop) {
-        setLoading(true);
-        try {
-          if (!routeInfo) {
-            console.error('Unknown route');
-            setNextArrivals(["No route data"]);
-            return;
-          }
-          const stopInfo = routeInfo.stops.find((s) => s.stopName === stop);
-          if (!stopInfo) {
-            console.error('Unknown stop selected');
-            setNextArrivals(["No stop data"]);
-            return;
-          }
-          console.log("Fetching prediction for", routeId, stopInfo.stopId);
-          const predictionData = await getPrediction(routeId, stopInfo.stopId);
-          if (predictionData.length > 0) {
-            setNextArrivals([`${predictionData[0].prdctdn} min`]);
-          } else {
-            setNextArrivals(["No buses soon"]);
-          }
-        } catch (error) {
-          console.error('Error fetching prediction:', error);
-          setNextArrivals(["Error loading predictions"]);
-        } finally {
-          setLoading(false);
+      if (!stopId || !routeId) return;
+
+      setLoading(true);
+      try {
+        const predictionData = await getPrediction(routeId, stopId);
+        if (predictionData.length > 0) {
+          setNextArrivals([`${predictionData[0].prdctdn} min`]);
+        } else {
+          setNextArrivals(["No buses soon"]);
         }
+      } catch (error) {
+        console.error('Error fetching prediction:', error);
+        setNextArrivals(["Error loading predictions"]);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchPrediction();
-  }, [direction, stop, routeId, routeInfo]);
+  }, [stopId, routeId]);
+
+  const stopsToShow = stopsByDirection[direction] || [];
 
   return (
     <div>
@@ -106,34 +112,43 @@ function RouteDetail() {
 
         <Card>
           <Label>Select Direction</Label>
-          <Dropdown value={direction} onChange={(e) => setDirection(e.target.value)}>
+          <Dropdown
+            value={direction}
+            onChange={(e) => {
+              setDirection(e.target.value);
+              setStopId('');
+              setNextArrivals([]);
+            }}
+          >
             <option value="">Select Direction</option>
-            {Array.isArray(routeInfo?.directions) && routeInfo.directions.length > 0 ? (
-              routeInfo.directions.map((dir) => (
-                <option key={dir} value={dir}>{dir}</option>
-              ))
-            ) : (
-              <option disabled>No directions available</option>
-            )}
+            {Object.keys(stopsByDirection).map((dir) => (
+              <option key={dir} value={dir}>{dir}</option>
+            ))}
           </Dropdown>
 
           <Label>Select Stop</Label>
-          <Dropdown value={stop} onChange={(e) => setStop(e.target.value)}>
+          <Dropdown
+            value={stopId}
+            onChange={(e) => setStopId(e.target.value)}
+            disabled={!direction}
+          >
             <option value="">Select Stop</option>
-            {Array.isArray(routeInfo?.stops) && routeInfo.stops.length > 0 ? (
-              routeInfo.stops.map((s) => (
-                <option key={s.stopId} value={s.stopName}>{s.stopName}</option>
-              ))
-            ) : (
-              <option disabled>No stops available</option>
-            )}
+            {stopsToShow.map((s) => (
+              <option key={s.stopId} value={s.stopId}>
+                {s.stopName}
+              </option>
+            ))}
           </Dropdown>
         </Card>
 
         <NextBusCard
           route={routeId}
           direction={direction}
-          stop={stop}
+          stop={
+            stopId
+              ? (stopsToShow.find(s => s.stopId === stopId)?.stopName || stopId)
+              : ''
+          }
           nextArrivals={loading ? ['Loading...'] : nextArrivals}
         />
 
