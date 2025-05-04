@@ -1,10 +1,11 @@
 // src/pages/Tracker.js
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import TripContext from '../TripContext';
 import Navbar from '../components/Navbar';
 import FilterBar from '../components/FilterBar';
 import NextBusCard from '../components/NextBusCard';
 import styled from 'styled-components';
+import { getPrediction } from '../services/apiService';
 
 const Header = styled.h2`
   text-align: center;
@@ -15,6 +16,31 @@ const Header = styled.h2`
 function Tracker() {
   const { trip } = useContext(TripContext);
   const { route, direction, stop } = trip;
+  const [nextArrivals, setNextArrivals] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchPrediction = async () => {
+      if (route && stop) {
+        setLoading(true);
+        try {
+          const predictionData = await getPrediction(route, stop);
+          if (predictionData.length > 0) {
+            setNextArrivals([`${predictionData[0].prdctdn} min`]);
+          } else {
+            setNextArrivals(["No buses soon"]);
+          }
+        } catch (error) {
+          console.error('Error fetching prediction:', error);
+          setNextArrivals(["Error loading predictions"]);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchPrediction();
+  }, [route, stop]);
 
   return (
     <div>
@@ -23,12 +49,11 @@ function Tracker() {
       <Header>
         Tracking: {route ? route : 'N/A'} — {direction ? direction : 'N/A'} to {stop ? stop : 'N/A'}
       </Header>
-      {/* Render NextBusCard with dummy or real data */}
       <NextBusCard
         route={route}
         direction={direction}
         stop={stop}
-        nextArrivals={['3:09 PM', '3:29 PM', '3:49 PM']} // dummy array; replace later with real data
+        nextArrivals={loading ? ['Loading...'] : nextArrivals}
       />
       {/* Here you would add components for the live map or additional info */}
     </div>

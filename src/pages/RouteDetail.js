@@ -5,6 +5,8 @@ import Navbar from '../components/Navbar';
 import styled from 'styled-components';
 import TripContext from '../TripContext';
 import NextBusCard from '../components/NextBusCard';
+import { getPrediction, getAvgPrediction } from '../services/apiService';
+import busData from '../Data/busData';
 
 const Container = styled.div`
   padding: 1rem;
@@ -48,14 +50,94 @@ const Label = styled.label`
 function RouteDetail() {
   const { routeId } = useParams();
   const { trip } = useContext(TripContext);
+
   const [direction, setDirection] = useState('');
-  const [stop, setStop] = useState('');
+  const [stopId, setStopId] = useState('');
+  const [nextArrivals, setNextArrivals] = useState([]);
+  const [avgArrival, setAvgArrival] = useState('');
+  const [avgTimeObj, setAvgTimeObj] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [stopsByDirection, setStopsByDirection] = useState({});
+
+  const routeInfo = busData.find((r) => r.routeId === routeId);
 
   useEffect(() => {
-    // Optional: Pre-fill defaults if needed from trip context
+    if (!routeInfo) return;
+
+    const allStops = routeInfo.stops || [];
+    const mid = Math.ceil(allStops.length / 2);
+
+    const simulated = {
+      'TO CAMPUS': allStops.slice(0, mid),
+      'FROM CAMPUS': allStops.slice(mid),
+    };
+
+    setStopsByDirection(simulated);
+  }, [routeInfo]);
+
+  useEffect(() => {
     if (trip.direction) setDirection(trip.direction);
-    if (trip.stop) setStop(trip.stop);
+    if (trip.stopId) setStopId(trip.stopId);
   }, [trip]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!stopId || !routeId) return;
+
+      setLoading(true);
+      try {
+        const [predictionData, avgData] = await Promise.all([
+          getPrediction(routeId, stopId),
+          getAvgPrediction(routeId, stopId)
+        ]);
+
+        // Real-time prediction
+        if (predictionData.length > 0) {
+          setNextArrivals([`${predictionData[0].prdctdn} min`]);
+        } else {
+          setNextArrivals(["No buses soon"]);
+        }
+
+        // Average prediction
+        if (avgData?.avg_prediction) {
+          setAvgArrival(avgData.avg_prediction);
+
+          const now = new Date();
+          const avgDate = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            avgData.hour,
+            avgData.minute
+          );
+          setAvgTimeObj(avgDate);
+        } else {
+          setAvgArrival('Unavailable');
+          setAvgTimeObj(null);
+        }
+      } catch (error) {
+        console.error('Error fetching predictions:', error);
+        setNextArrivals(["Error loading predictions"]);
+        setAvgArrival('Unavailable');
+        setAvgTimeObj(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [stopId, routeId]);
+
+  const stopsToShow = stopsByDirection[direction] || [];
+
+  const getRelativeTime = (avgDate) => {
+    const now = new Date();
+    const diffMin = Math.round((avgDate - now) / 60000);
+
+    if (diffMin > 0) return `in ~${diffMin} mins`;
+    if (diffMin < 0) return `${Math.abs(diffMin)} mins ago`;
+    return 'now';
+  };
 
   return (
     <div>
@@ -65,28 +147,61 @@ function RouteDetail() {
 
         <Card>
           <Label>Select Direction</Label>
-          <Dropdown value={direction} onChange={(e) => setDirection(e.target.value)}>
+          <Dropdown
+            value={direction}
+            onChange={(e) => {
+              setDirection(e.target.value);
+              setStopId('');
+              setNextArrivals([]);
+              setAvgArrival('');
+              setAvgTimeObj(null);
+            }}
+          >
             <option value="">Select Direction</option>
-            <option value="From Campus">From Campus</option>
-            <option value="To Campus">To Campus</option>
-            {/* Add other directions if needed */}
+            {Object.keys(stopsByDirection).map((dir) => (
+              <option key={dir} value={dir}>{dir}</option>
+            ))}
           </Dropdown>
 
           <Label>Select Stop</Label>
-          <Dropdown value={stop} onChange={(e) => setStop(e.target.value)}>
+          <Dropdown
+            value={stopId}
+            onChange={(e) => setStopId(e.target.value)}
+            disabled={!direction}
+          >
             <option value="">Select Stop</option>
-            <option value="SUNY Oswego Campus Center">SUNY Oswego Campus Center</option>
-            <option value="Rudolph St & Centennial Dr">Rudolph St & Centennial Dr</option>
-            {/* Add other stops dynamically later */}
+            {stopsToShow.map((s) => (
+              <option key={s.stopId} value={s.stopId}>
+                {s.stopName}
+              </option>
+            ))}
           </Dropdown>
         </Card>
 
         <NextBusCard
           route={routeId}
           direction={direction}
-          stop={stop}
-          nextArrivals={['8:15 AM', '8:45 AM']} // still dummy, to be replaced by backend data
+          stop={
+            stopId
+              ? (stopsToShow.find(s => s.stopId === stopId)?.stopName || stopId)
+              : ''
+          }
+          nextArrivals={loading ? ['Loading...'] : nextArrivals}
         />
+
+        {avgArrival && (
+          <Card>
+            <h3>Typical Arrival Time</h3>
+            <p>
+              Historical average arrival: <strong>{avgArrival}</strong>
+              {avgTimeObj && (
+                <span style={{ color: '#777', fontSize: '0.9rem' }}>
+                  {' '}({getRelativeTime(avgTimeObj)})
+                </span>
+              )}
+            </p>
+          </Card>
+        )}
 
         <Card>
           <h3>Arrival Trends</h3>
