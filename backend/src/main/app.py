@@ -48,6 +48,12 @@ def get_prediction():
                 result = cursor.fetchone()
 
                 if result:
+                    # Check if the timestamp is from today
+                    prediction_time = result['tmstmp']
+                    today = datetime.now().date()
+                    if prediction_time.date() != today:
+                        return jsonify({'message': 'No Bus Scheduled Currently. Please Check Official CENTRO Bus Schedule'}), 404
+
                     # Convert times to Eastern and 12-hour format
                     if 'prdtm' in result and result['prdtm']:
                         dt = result['prdtm']
