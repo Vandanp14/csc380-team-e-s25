@@ -38,3 +38,10 @@ export async function getStops(routeId) {
   }
   return await response.json();
 }
+export async function getAvgPrediction(route, stop) {
+  const response = await fetch(`${BACKEND_URL}/avgpredictions?route=${route}&stop=${stop}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch average prediction');
+  }
+  return await response.json();
+}

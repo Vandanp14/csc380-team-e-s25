@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import styled from 'styled-components';
 import TripContext from '../TripContext';
 import NextBusCard from '../components/NextBusCard';
-import { getPrediction } from '../services/apiService';
+import { getPrediction, getAvgPrediction } from '../services/apiService';
 import busData from '../Data/busData';
 
 const Container = styled.div`
@@ -54,6 +54,8 @@ function RouteDetail() {
   const [direction, setDirection] = useState('');
   const [stopId, setStopId] = useState('');
   const [nextArrivals, setNextArrivals] = useState([]);
+  const [avgArrival, setAvgArrival] = useState('');
+  const [avgTimeObj, setAvgTimeObj] = useState(null);
   const [loading, setLoading] = useState(false);
   const [stopsByDirection, setStopsByDirection] = useState({});
 
@@ -74,35 +76,68 @@ function RouteDetail() {
   }, [routeInfo]);
 
   useEffect(() => {
-    // Autofill from TripContext if available
     if (trip.direction) setDirection(trip.direction);
     if (trip.stopId) setStopId(trip.stopId);
   }, [trip]);
 
   useEffect(() => {
-    const fetchPrediction = async () => {
+    const fetchData = async () => {
       if (!stopId || !routeId) return;
 
       setLoading(true);
       try {
-        const predictionData = await getPrediction(routeId, stopId);
+        const [predictionData, avgData] = await Promise.all([
+          getPrediction(routeId, stopId),
+          getAvgPrediction(routeId, stopId)
+        ]);
+
+        // Real-time prediction
         if (predictionData.length > 0) {
           setNextArrivals([`${predictionData[0].prdctdn} min`]);
         } else {
           setNextArrivals(["No buses soon"]);
         }
+
+        // Average prediction
+        if (avgData?.avg_prediction) {
+          setAvgArrival(avgData.avg_prediction);
+
+          const now = new Date();
+          const avgDate = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            avgData.hour,
+            avgData.minute
+          );
+          setAvgTimeObj(avgDate);
+        } else {
+          setAvgArrival('Unavailable');
+          setAvgTimeObj(null);
+        }
       } catch (error) {
-        console.error('Error fetching prediction:', error);
+        console.error('Error fetching predictions:', error);
         setNextArrivals(["Error loading predictions"]);
+        setAvgArrival('Unavailable');
+        setAvgTimeObj(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPrediction();
+    fetchData();
   }, [stopId, routeId]);
 
   const stopsToShow = stopsByDirection[direction] || [];
+
+  const getRelativeTime = (avgDate) => {
+    const now = new Date();
+    const diffMin = Math.round((avgDate - now) / 60000);
+
+    if (diffMin > 0) return `in ~${diffMin} mins`;
+    if (diffMin < 0) return `${Math.abs(diffMin)} mins ago`;
+    return 'now';
+  };
 
   return (
     <div>
@@ -118,6 +153,8 @@ function RouteDetail() {
               setDirection(e.target.value);
               setStopId('');
               setNextArrivals([]);
+              setAvgArrival('');
+              setAvgTimeObj(null);
             }}
           >
             <option value="">Select Direction</option>
@@ -151,6 +188,20 @@ function RouteDetail() {
           }
           nextArrivals={loading ? ['Loading...'] : nextArrivals}
         />
+
+        {avgArrival && (
+          <Card>
+            <h3>Typical Arrival Time</h3>
+            <p>
+              Historical average arrival: <strong>{avgArrival}</strong>
+              {avgTimeObj && (
+                <span style={{ color: '#777', fontSize: '0.9rem' }}>
+                  {' '}({getRelativeTime(avgTimeObj)})
+                </span>
+              )}
+            </p>
+          </Card>
+        )}
 
         <Card>
           <h3>Arrival Trends</h3>

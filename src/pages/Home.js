@@ -1,11 +1,11 @@
 // src/pages/Home.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Navbar from '../components/Navbar';
 import { FaSpinner } from 'react-icons/fa';
 import { busRoutes } from '../Data/busData';
-import { getPrediction } from '../services/apiService';
+import { getPrediction, getAvgPrediction } from '../services/apiService';
 
 
 
@@ -252,7 +252,6 @@ const Home = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherError, setWeatherError] = useState(null);
-
   const [routes, setRoutes] = useState([]);
   const [routesLoading, setRoutesLoading] = useState(true);
 
@@ -260,43 +259,43 @@ const Home = () => {
     const fetchRoutes = async () => {
       try {
         let routesList = busRoutes;
-  
+
         if (!routesList || routesList.length === 0) {
           routesList = [
             { routeId: 'OSW10', routeName: '10 Blue Route', defaultStopId: '15521' }
           ];
         }
-  
+
         const fetchedRoutes = await Promise.all(
           routesList.map(async (route) => {
             try {
               let stopId = route.defaultStopId || route.stops?.[0]?.stopId || '15521';
-              const predictionData = await getPrediction(route.routeId, stopId);
-  
-              // Check if prediction data is available
+
+              const [predictionData, avgData] = await Promise.all([
+                getPrediction(route.routeId, stopId),
+                getAvgPrediction(route.routeId, stopId)
+              ]);
+
               const nextArrival = predictionData.length > 0
                 ? `${predictionData[0].prdctdn} min`
                 : 'No buses soon';
-  
-              // Prediction data fields
-              const predictedTime = predictionData[0].prdctdn; // Predicted time in minutes
-              const isDelayed = predictionData[0].dly > 0; // Check if 'dly' is greater than 0 to classify as delayed
-  
-              // Determine bus status based on prediction data
-              let status = 'on-time'; // Default status is 'on-time'
-              if (isDelayed) {
-                status = 'delayed'; // Bus is delayed if dly > 0
-              } else if (predictedTime <= 2) {
-                status = 'approaching'; // If predicted arrival time is very close (approaching)
-              }
-  
-              return { ...route, status, nextArrival };
+
+              const predictedTime = predictionData[0]?.prdctdn || 0;
+              const isDelayed = predictionData[0]?.dly > 0;
+
+              let status = 'on-time';
+              if (isDelayed) status = 'delayed';
+              else if (predictedTime <= 2) status = 'approaching';
+
+              const avgArrival = avgData?.avg_prediction || 'Unavailable';
+
+              return { ...route, status, nextArrival, avgArrival };
             } catch (error) {
-              return { ...route, status: 'unknown', nextArrival: 'Coming Soon' };
+              return { ...route, status: 'unknown', nextArrival: 'Coming Soon', avgArrival: 'Unavailable' };
             }
           })
         );
-  
+
         setRoutes(fetchedRoutes);
       } catch (error) {
         console.error('Error fetching routes:', error);
@@ -304,10 +303,9 @@ const Home = () => {
         setRoutesLoading(false);
       }
     };
-  
+
     fetchRoutes();
   }, []);
-  
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -410,6 +408,12 @@ const Home = () => {
                   <TimeIcon></TimeIcon>
                   Next arrival: {route.nextArrival}
                 </NextArrival>
+                {route.avgArrival && (
+                  <NextArrival>
+                    <TimeIcon></TimeIcon>
+                    Avg arrival: {route.avgArrival}
+                  </NextArrival>
+                )}
               </RouteCard>
             ))
           )}
@@ -439,9 +443,8 @@ const Home = () => {
         🚌
       </FloatingActionButton>
       <Disclaimer>
-  Arrival predictions are based on estimates and may vary. Users should account for possible delays.
-</Disclaimer>
-
+        Arrival predictions are based on estimates and may vary. Users should account for possible delays.
+      </Disclaimer>
     </HomeContainer>
   );
 };
