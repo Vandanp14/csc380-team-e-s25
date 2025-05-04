@@ -30,3 +30,4 @@ yarn-error.log*
 # Accidental folders
 /frontend/
 /csc380-team-e-s25/
+src/schedule.json
