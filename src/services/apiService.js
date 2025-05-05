@@ -14,6 +14,7 @@ export async function getPrediction(route, stop) {
       throw new Error('Failed to fetch prediction');
     }
     const data = await response.json();
+    console.log("Prediction data:", data);
     return data;
   } catch (error) {
     console.error('Error fetching prediction:', error);
@@ -38,10 +39,19 @@ export async function getStops(routeId) {
   }
   return await response.json();
 }
-export async function getAvgPrediction(route, stop) {
-  const response = await fetch(`${BACKEND_URL}/avgpredictions?route=${route}&stop=${stop}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch average prediction');
+export async function getAvgPrediction(route, stop, hour, minute) {
+  const url = `${BACKEND_URL}/avgPrediction?route=${route}&stop=${stop}&hour=${hour}&minute=${minute}`;
+  console.log("GET:", url);  // <-- Add logging
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch average prediction');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error in getAvgPrediction:', error);
+    throw error;
   }
-  return await response.json();
 }
+
+

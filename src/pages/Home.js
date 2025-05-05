@@ -7,8 +7,6 @@ import { FaSpinner } from 'react-icons/fa';
 import { busRoutes } from '../Data/busData';
 import { getPrediction, getAvgPrediction } from '../services/apiService';
 
-
-
 const HomeContainer = styled.div`
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
   min-height: 100vh;
@@ -27,7 +25,6 @@ const Disclaimer = styled.div`
   z-index: 10;
 `;
 
-
 const HeroSection = styled.div`
   height: 300px;
   background-image: url('/images/bus-hero.jpg');
@@ -40,7 +37,7 @@ const HeroSection = styled.div`
   text-align: center;
   color: white;
   margin-bottom: 2rem;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -98,7 +95,7 @@ const RouteGrid = styled.div`
 
 const spin = keyframes`
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
 `;
 
 const StyledSpinner = styled(FaSpinner)`
@@ -106,7 +103,6 @@ const StyledSpinner = styled(FaSpinner)`
   color: #004b23;
   animation: ${spin} 1s linear infinite;
 `;
-
 
 const RouteCard = styled.div`
   background: white;
@@ -117,21 +113,18 @@ const RouteCard = styled.div`
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: ${props => 
-      props.status === 'on-time' ? 'linear-gradient(90deg, #28a745, #34ce57)' : 
-      props.status === 'delayed' ? 'linear-gradient(90deg, #dc3545, #e4606d)' : 
-      props.status === 'approaching' ? 'linear-gradient(90deg, #ffc107, #ffcd39)' : '#6c757d'
-    };
+    top: 0; left: 0; right: 0; height: 4px;
+    background: ${props =>
+      props.$status === 'on-time'     ? 'linear-gradient(90deg, #28a745, #34ce57)' :
+      props.$status === 'delayed'     ? 'linear-gradient(90deg, #dc3545, #e4606d)' :
+      props.$status === 'approaching' ? 'linear-gradient(90deg, #ffc107, #ffcd39)' :
+                                         '#6c757d'};
   }
-  
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -159,16 +152,16 @@ const StatusIcon = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${props => 
-    props.status === 'on-time' ? '#d4edda' : 
-    props.status === 'delayed' ? '#f8d7da' : 
-    props.status === 'approaching' ? '#fff3cd' : '#e2e3e5'
-  };
-  color: ${props => 
-    props.status === 'on-time' ? '#155724' : 
-    props.status === 'delayed' ? '#721c24' : 
-    props.status === 'approaching' ? '#856404' : '#383d41'
-  };
+  background-color: ${props =>
+    props.$status === 'on-time'     ? '#d4edda' :
+    props.$status === 'delayed'     ? '#f8d7da' :
+    props.$status === 'approaching' ? '#fff3cd' :
+                                       '#e2e3e5'};
+  color: ${props =>
+    props.$status === 'on-time'     ? '#155724' :
+    props.$status === 'delayed'     ? '#721c24' :
+    props.$status === 'approaching' ? '#856404' :
+                                       '#383d41'};
   font-size: 0.9rem;
   font-weight: 600;
 `;
@@ -240,7 +233,7 @@ const FloatingActionButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   z-index: 10;
-  
+
   &:hover {
     transform: scale(1.1);
     background: #001f42;
@@ -249,56 +242,64 @@ const FloatingActionButton = styled.button`
 
 const Home = () => {
   const navigate = useNavigate();
-  const [weatherData, setWeatherData] = useState(null);
+  const [weatherData, setWeatherData]       = useState(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
-  const [weatherError, setWeatherError] = useState(null);
-  const [routes, setRoutes] = useState([]);
-  const [routesLoading, setRoutesLoading] = useState(true);
+  const [weatherError, setWeatherError]     = useState(null);
+  const [routes, setRoutes]                 = useState([]);
+  const [routesLoading, setRoutesLoading]   = useState(true);
 
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
         let routesList = busRoutes;
-
         if (!routesList || routesList.length === 0) {
-          routesList = [
-            { routeId: 'OSW10', routeName: '10 Blue Route', defaultStopId: '15521' }
-          ];
+          routesList = [{ routeId:'OSW10', routeName:'10 Blue Route', defaultStopId:'15521' }];
         }
 
-        const fetchedRoutes = await Promise.all(
-          routesList.map(async (route) => {
-            try {
-              let stopId = route.defaultStopId || route.stops?.[0]?.stopId || '15521';
+        const now    = new Date();
+        const hour   = now.getHours();
+        const minute = now.getMinutes();
+        console.log('Calling avgPrediction with:', { hour, minute });
 
-              const [predictionData, avgData] = await Promise.all([
+        const fetched = await Promise.all(
+          routesList.map(async route => {
+            try {
+              const stopId = route.defaultStopId || route.stops?.[0]?.stopId || '15521';
+
+              // 1) fetch both real-time + average
+              const [ rawPred, avg ] = await Promise.all([
                 getPrediction(route.routeId, stopId),
-                getAvgPrediction(route.routeId, stopId)
+                getAvgPrediction(route.routeId, stopId, hour, minute)
               ]);
 
-              const nextArrival = predictionData.length > 0
-                ? `${predictionData[0].prdctdn} min`
-                : 'No buses soon';
+              // 2) normalize to array
+              const arr = Array.isArray(rawPred) ? rawPred : [rawPred];
 
-              const predictedTime = predictionData[0]?.prdctdn || 0;
-              const isDelayed = predictionData[0]?.dly > 0;
+              let nextArrival = 'Coming Soon';
+              let status      = 'unknown';
 
-              let status = 'on-time';
-              if (isDelayed) status = 'delayed';
-              else if (predictedTime <= 2) status = 'approaching';
+              if (arr[0] && arr[0].prdctdn !== null && arr[0].prdctdn !== undefined) {
+              const mins = Number(arr[0].prdctdn);
+              nextArrival = `${mins} min`;
 
-              const avgArrival = avgData?.avg_prediction || 'Unavailable';
+              if (arr[0].dly > 0) status = 'delayed';
+              else if (mins <= 2) status = 'approaching';
+              else status = 'on-time';
+            }
 
+              
+
+              const avgArrival = avg?.avg_prediction || 'Unavailable';
               return { ...route, status, nextArrival, avgArrival };
-            } catch (error) {
-              return { ...route, status: 'unknown', nextArrival: 'Coming Soon', avgArrival: 'Unavailable' };
+            } catch {
+              return { ...route, status:'unknown', nextArrival:'Coming Soon', avgArrival:'Unavailable' };
             }
           })
         );
 
-        setRoutes(fetchedRoutes);
-      } catch (error) {
-        console.error('Error fetching routes:', error);
+        setRoutes(fetched);
+      } catch (err) {
+        console.error('Error fetching routes:', err);
       } finally {
         setRoutesLoading(false);
       }
@@ -311,22 +312,12 @@ const Home = () => {
     const fetchWeather = async () => {
       try {
         const API_KEY = 'ab385b44b9b33d12cf4397188ca4381b';
-        const city = 'Oswego,NY,US';
-        const units = 'imperial';
-
-        const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=${units}&appid=${API_KEY}`
+        const city    = 'Oswego,NY,US';
+        const resp    = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${API_KEY}`
         );
-
-        if (!response.ok) {
-          throw new Error(`Weather API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (!data || !data.main || !data.weather || !data.weather[0]) {
-          throw new Error('Invalid weather data format');
-        }
-
+        if (!resp.ok) throw new Error(resp.statusText);
+        const data = await resp.json();
         setWeatherData(data);
       } catch (err) {
         console.error('Error fetching weather:', err);
@@ -335,48 +326,23 @@ const Home = () => {
         setWeatherLoading(false);
       }
     };
-
     fetchWeather();
   }, []);
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'on-time':
-        return 'On-time';
-      case 'delayed':
-        return 'Delayed';
-      case 'approaching':
-        return 'Approaching';
-      default:
-        return '?';
-    }
-  };
+  const getStatusIcon = status =>
+    status === 'on-time'     ? 'On-time'  :
+    status === 'delayed'     ? 'Delayed'  :
+    status === 'approaching' ? 'Approaching' : '?';
 
-  const getWeatherIcon = (condition) => {
-    switch (condition) {
-      case 'Clear':
-        return '☀️';
-      case 'Clouds':
-        return '☁️';
-      case 'Rain':
-        return '🌧️';
-      case 'Snow':
-        return '🌨️';
-      case 'Thunderstorm':
-        return '⛈️';
-      case 'Drizzle':
-        return '🌦️';
-      case 'Mist':
-      case 'Fog':
-        return '🌫️';
-      default:
-        return '🌤️';
-    }
-  };
+  const getWeatherIcon = cond =>
+    ({ Clear:'☀️', Clouds:'☁️', Rain:'🌧️', Snow:'🌨️',
+       Thunderstorm:'⛈️', Drizzle:'🌦️', Mist:'🌫️', Fog:'🌫️'
+     }[cond] || '🌤️');
 
   return (
     <HomeContainer>
       <Navbar />
+
       <HeroSection>
         <HeroContent>
           <HeroTitle>CENTRO BUS PREDICTOR</HeroTitle>
@@ -387,7 +353,7 @@ const Home = () => {
       <ContentWrapper>
         <RouteGrid>
           {routesLoading ? (
-            <div style={{ textAlign: 'center', gridColumn: 'span 2' }}>
+            <div style={{ textAlign:'center', gridColumn:'span 2' }}>
               <StyledSpinner />
               <p>Loading bus routes...</p>
             </div>
@@ -396,22 +362,22 @@ const Home = () => {
               <RouteCard
                 key={route.routeId}
                 onClick={() => navigate(`/route/${route.routeId}`)}
-                status={route.status}
+                $status={route.status}
               >
                 <RouteHeader>
                   <RouteName>{route.routeName}</RouteName>
-                  <StatusIcon status={route.status}>
+                  <StatusIcon $status={route.status}>
                     {getStatusIcon(route.status)}
                   </StatusIcon>
                 </RouteHeader>
+
                 <NextArrival>
-                  <TimeIcon></TimeIcon>
-                  Next arrival: {route.nextArrival}
+                  <TimeIcon />Next arrival: {route.nextArrival}
                 </NextArrival>
+
                 {route.avgArrival && (
                   <NextArrival>
-                    <TimeIcon></TimeIcon>
-                    Avg arrival: {route.avgArrival}
+                    <TimeIcon />Avg arrival: {route.avgArrival}
                   </NextArrival>
                 )}
               </RouteCard>
@@ -424,24 +390,27 @@ const Home = () => {
             <div>Loading weather data...</div>
           ) : weatherError ? (
             <div>Weather data unavailable</div>
-          ) : weatherData ? (
+          ) : (
             <>
-              <WeatherIcon>
-                {getWeatherIcon(weatherData.weather[0].main)}
-              </WeatherIcon>
+              <WeatherIcon>{getWeatherIcon(weatherData.weather[0].main)}</WeatherIcon>
               <WeatherInfo>
-                <WeatherTemp>{Math.round(weatherData.main.temp)}°F</WeatherTemp>
-                <WeatherDesc>{weatherData.weather[0].description}</WeatherDesc>
+                <WeatherTemp>
+                  {Math.round(weatherData.main.temp)}°F
+                </WeatherTemp>
+                <WeatherDesc>
+                  {weatherData.weather[0].description}
+                </WeatherDesc>
                 <WeatherLocation>Oswego, NY</WeatherLocation>
               </WeatherInfo>
             </>
-          ) : null}
+          )}
         </WeatherWidget>
       </ContentWrapper>
 
       <FloatingActionButton onClick={() => navigate('/tracker')}>
         🚌
       </FloatingActionButton>
+
       <Disclaimer>
         Arrival predictions are based on estimates and may vary. Users should account for possible delays.
       </Disclaimer>
