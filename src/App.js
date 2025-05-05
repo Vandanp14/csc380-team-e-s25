@@ -9,6 +9,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import TripContext from './TripContext';
 import './App.css';
 
+
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;

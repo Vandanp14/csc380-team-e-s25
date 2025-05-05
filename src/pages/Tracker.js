@@ -1,62 +1,72 @@
 // src/pages/Tracker.js
-import React, { useContext, useState, useEffect } from 'react';
-import TripContext from '../TripContext';
-import Navbar from '../components/Navbar';
-import FilterBar from '../components/FilterBar';
-import NextBusCard from '../components/NextBusCard';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { getPrediction } from '../services/apiService';
+import BusMap from '../components/BusMap';
+import Navbar from '../components/Navbar';
+
+const TrackerWrapper = styled.div`
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+`;
 
 const Header = styled.h2`
   text-align: center;
-  margin: 1rem 0;
   color: #002B5C;
 `;
 
+const SelectWrapper = styled.div`
+  text-align: center;
+  margin: 1rem 0;
+`;
+
+const Dropdown = styled.select`
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  color: #333;
+`;
+
 function Tracker() {
-  const { trip } = useContext(TripContext);
-  const { route, direction, stop } = trip;
-  const [nextArrivals, setNextArrivals] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [routeData, setRouteData] = useState({});
+  const [selectedRoute, setSelectedRoute] = useState('');
+  const [stops, setStops] = useState([]);
 
   useEffect(() => {
-    const fetchPrediction = async () => {
-      if (route && stop) {
-        setLoading(true);
-        try {
-          const predictionData = await getPrediction(route, stop);
-          if (predictionData.length > 0) {
-            setNextArrivals([`${predictionData[0].prdctdn} min`]);
-          } else {
-            setNextArrivals(["No buses soon"]);
-          }
-        } catch (error) {
-          console.error('Error fetching prediction:', error);
-          setNextArrivals(["Error loading predictions"]);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
+    fetch('/routes_stops.json')
+      .then(res => res.json())
+      .then(data => setRouteData(data))
+      .catch(err => console.error('Failed to load route data:', err));
+  }, []);
 
-    fetchPrediction();
-  }, [route, stop]);
+  const handleRouteChange = (e) => {
+    const route = e.target.value;
+    setSelectedRoute(route);
+    setStops(routeData[route] || []);
+  };
 
   return (
-    <div>
+    <>
       <Navbar />
-      <FilterBar />
-      <Header>
-        Tracking: {route ? route : 'N/A'} — {direction ? direction : 'N/A'} to {stop ? stop : 'N/A'}
-      </Header>
-      <NextBusCard
-        route={route}
-        direction={direction}
-        stop={stop}
-        nextArrivals={loading ? ['Loading...'] : nextArrivals}
-      />
-      {/* Here you would add components for the live map or additional info */}
-    </div>
+      <TrackerWrapper>
+        <Header>🚌 Live Bus Tracker</Header>
+        <SelectWrapper>
+          <label htmlFor="routeSelect">Choose a route: </label>
+          <Dropdown id="routeSelect" value={selectedRoute} onChange={handleRouteChange}>
+            <option value="">-- Select a Route --</option>
+            {Object.keys(routeData).map(route => (
+              <option key={route} value={route}>{route}</option>
+            ))}
+          </Dropdown>
+        </SelectWrapper>
+        <BusMap buses={stops} />
+      </TrackerWrapper>
+    </>
   );
 }
 
