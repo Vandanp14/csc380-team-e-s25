@@ -54,7 +54,7 @@ function Tracker() {
     <>
       <Navbar />
       <TrackerWrapper>
-        <Header>🚌 Live Bus Tracker</Header>
+        <Header> 📍🚌 Route Map</Header>
         <SelectWrapper>
           <label htmlFor="routeSelect">Choose a route: </label>
           <Dropdown id="routeSelect" value={selectedRoute} onChange={handleRouteChange}>

@@ -92,12 +92,12 @@ function HelpPage() {
             <FAQList>
               <FAQItem>
                 <FAQQuestion onClick={() => toggleFAQ(1)}>
-                  Where do I look for the predictions from Campus?
+                  Where do I look for different routes from Campus?
                 </FAQQuestion>
                 {openFAQ === 1 && (
                   <FAQAnswer>
-                    Click on the top left icon to go to homepage. <br />
-                    Then, the prediction for the next available bus for Blue Route (OSW10), Green Route (OSW11), OSW1A, OSW2A is displayed on the panel.
+                    - Click on "Home" at the top right corner. It will re-direct you to the home page that displays all routes from the campus centre.  <br />
+                    - The predicted arrival times for the next arriving bus to the MCC Bus Stop will be displayed for each available routes.
                   </FAQAnswer>
                 )}
               </FAQItem>
@@ -108,23 +108,23 @@ function HelpPage() {
                 </FAQQuestion>
                 {openFAQ === 2 && (
                   <FAQAnswer>
-                    - Click on the top left icon to go to homepage. <br />
-                    - On the top right, click schedule. <br />
-                    - Select your bus route from the drop down.
+                    - On the top right, click "Schedule". <br />
+                    - Select your bus route from the drop down.<br />
+                    - It will pop open the PDF containing all scheduled times.
                   </FAQAnswer>
                 )}
               </FAQItem>
 
               <FAQItem>
                 <FAQQuestion onClick={() => toggleFAQ(3)}>
-                  Where do I see the live map of the bus?
+                  How do I see the different stop in the map?
                 </FAQQuestion>
                 {openFAQ === 3 && (
                   <FAQAnswer>
-                    - Click on the top left icon to go to homepage. <br />
-                    - On the top right, click schedule. <br />
-                    - Select Route, Direction and Stop. <br />
-                    - Click on Search.
+                    - On the top right, click "Map". <br />
+                    - Select Route from the drop down. <br />
+                    - The Red Pinpoint are the stops for the selected route.<br />
+                    - If you click on the stops, you can view the names of the stop and the next arrival time.
                   </FAQAnswer>
                 )}
               </FAQItem>
@@ -135,9 +135,10 @@ function HelpPage() {
                 </FAQQuestion>
                 {openFAQ === 4 && (
                   <FAQAnswer>
-                    - Click on the top left icon to go to homepage. <br />
-                    - From the panel displayed for different buses, click on your bus route. <br />
-                    - Select Direction, Stop, and the time you want the prediction for.
+                    - On the top right, click "Home" <br />
+                    - From the panel displayed for different buses, click on your Bus Route. <br />
+                    - Select Direction and Stop. This will give you the next arrival time.<br />
+                    - Check the box that appears and select the time you want the prediction for. This will display the predicted time.
                   </FAQAnswer>
                 )}
               </FAQItem>
@@ -150,7 +151,7 @@ function HelpPage() {
                   <FAQAnswer>
                     - Red: Delay <br />
                     - Green: On time <br />
-                    - Yellow: Caution (e.g., possible minor delay or uncertainty)
+                    - Yellow: Approaching right now
                   </FAQAnswer>
                 )}
               </FAQItem>

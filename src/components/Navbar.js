@@ -100,7 +100,7 @@ const Navbar = () => {
             Schedule
           </NavLink>
           <NavLink to="/tracker" active={isActive('/tracker')}>
-            Live Tracker
+            Map
           </NavLink>
           <NavLink to="/help" active={isActive('/help')}>
             Help
