@@ -102,6 +102,10 @@ const Navbar = () => {
           <NavLink to="/tracker" active={isActive('/tracker')}>
             Live Tracker
           </NavLink>
+          <NavLink to="/helppage" active={isActive('/help')}>
+            Help
+          </NavLink>
+
         </NavLinks>
       </NavContent>
     </NavContainer>
