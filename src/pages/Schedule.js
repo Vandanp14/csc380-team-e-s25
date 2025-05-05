@@ -1,4 +1,3 @@
-// src/pages/Schedule.js
 import React, { useContext, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -7,6 +6,7 @@ import FilterBar from '../components/FilterBar';
 import ScheduleTable from '../components/ScheduleTable';
 import NextBusCard from '../components/NextBusCard';
 import TripContext from '../TripContext';
+import { getSchedule } from '../services/apiService';
 
 const ScheduleContainer = styled.div`
   background-color: #f8f9fa;
@@ -89,28 +89,56 @@ const NoSelectionMessage = styled.div`
   font-size: 1.1rem;
 `;
 
+const routeLinks = {
+  OSW10: 'https://www.centro.org/docs/default-source/pdf-schedules/oswego/osw10-osw11.pdf?sfvrsn=3a62a600_4',
+  OSW11: 'https://www.centro.org/docs/default-source/pdf-schedules/oswego/osw10-osw11.pdf?sfvrsn=3a62a600_4',
+  OSW1A: 'https://www.centro.org/docs/default-source/pdf-schedules/oswego/osw-city.pdf?sfvrsn=57939e6_6',
+  OSW2A: 'https://www.centro.org/docs/default-source/pdf-schedules/oswego/osw-city.pdf?sfvrsn=57939e6_6',
+};
+
 function Schedule() {
   const location = useLocation();
   const tripContext = useContext(TripContext);
-  // Check if trip context provides selections; if not, fall back to location state (or defaults).
   const initialTrip = tripContext?.trip || location.state || { route: '', direction: '', stop: '' };
   const { route, direction, stop } = initialTrip;
 
-  // If no trip is selected, allow the user to choose a route (dummy fallback for now)
   const [selectedRoute, setSelectedRoute] = useState(route);
+  const [scheduleData, setScheduleData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const routes = [
     { id: 'OSW10', name: 'OSW10 SUNY Oswego Blue Route' },
-    { id: 'OSW20', name: 'OSW20 SUNY Oswego Red Route' },
-    { id: 'OSW30', name: 'OSW30 SUNY Oswego Green Route' },
+    { id: 'OSW10', name: 'OSW20 SUNY Oswego Green Route' },
+    { id: 'OSW1A', name: 'OSW1A Walmart via 104' },
+    { id: 'OSW2A', name: 'OSW2A College via 104' },
   ];
 
-  // Optional: Sync dropdown selection with TripContext if no trip exists.
   useEffect(() => {
-    if (!route && selectedRoute) {
-      // Here you could update TripContext or signal that a trip was selected.
-      // For example, you might use a context update function if available.
+    const fetchSchedule = async () => {
+      const activeRoute = route || selectedRoute;
+      if (activeRoute) {
+        setLoading(true);
+        try {
+          const data = await getSchedule(activeRoute);
+          setScheduleData(data);
+        } catch (error) {
+          console.error('Error fetching schedule:', error);
+          setScheduleData([]);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchSchedule();
+  }, [route, selectedRoute]);
+
+  const handleRouteChange = (event) => {
+    const routeId = event.target.value;
+    setSelectedRoute(routeId);
+    if (routeLinks[routeId]) {
+      window.open(routeLinks[routeId], '_blank'); // Open PDF in a new tab
     }
-  }, [selectedRoute, route]);
+  };
 
   return (
     <ScheduleContainer>
@@ -127,12 +155,11 @@ function Schedule() {
           )}
         </ScheduleHeader>
         
-        {/* Fallback dropdown if no selection exists */}
         {!route && (
           <SelectContainer>
             <StyledSelect 
               value={selectedRoute} 
-              onChange={(e) => setSelectedRoute(e.target.value)}
+              onChange={handleRouteChange}  // Link the route selection to PDF redirection
             >
               <Option value="">Select a route</Option>
               {routes.map((r) => (
@@ -144,12 +171,8 @@ function Schedule() {
           </SelectContainer>
         )}
         
-        {/* NextBusCard displays a summary of the next arrival (dummy data) */}
-        
-        
-        {/* Only display the schedule table if a route is selected */}
         { (route || selectedRoute) ? (
-          <ScheduleTable route={route || selectedRoute} />
+          <ScheduleTable route={route || selectedRoute} scheduleData={scheduleData} loading={loading} />
         ) : (
           <NoSelectionMessage>
             Please select a route to view the schedule.

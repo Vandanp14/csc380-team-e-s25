@@ -1,15 +1,32 @@
 // src/pages/Home.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Navbar from '../components/Navbar';
 import { FaSpinner } from 'react-icons/fa';
+import { busRoutes } from '../Data/busData';
+import { getPrediction, getAvgPrediction } from '../services/apiService';
+
+
 
 const HomeContainer = styled.div`
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
   min-height: 100vh;
   position: relative;
 `;
+const Disclaimer = styled.div`
+  background-color: #f8f9fa;
+  color: #333;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+  border-top: 1px solid #ddd;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+`;
+
 
 const HeroSection = styled.div`
   height: 300px;
@@ -136,8 +153,8 @@ const RouteName = styled.h3`
 `;
 
 const StatusIcon = styled.div`
-  width: 28px;
-  height: 28px;
+  width: 120px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -235,23 +252,53 @@ const Home = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherError, setWeatherError] = useState(null);
-
   const [routes, setRoutes] = useState([]);
   const [routesLoading, setRoutesLoading] = useState(true);
 
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // simulate delay
-        const fetchedRoutes = [
-          { id: 'OSW10', name: 'OSW10 Blue Route', status: 'on-time', nextArrival: '5 min' },
-          { id: 'OSW11', name: 'OSW11 Green Route', status: 'delayed', nextArrival: '12 min' },
-          { id: 'OSW1A', name: 'OSW1A Walmart via 104', status: 'approaching', nextArrival: '2 min' },
-          { id: 'OSW2A', name: 'OSW2A College via 104', status: 'on-time', nextArrival: '8 min' },
-        ];
+        let routesList = busRoutes;
+
+        if (!routesList || routesList.length === 0) {
+          routesList = [
+            { routeId: 'OSW10', routeName: '10 Blue Route', defaultStopId: '15521' }
+          ];
+        }
+
+        const fetchedRoutes = await Promise.all(
+          routesList.map(async (route) => {
+            try {
+              let stopId = route.defaultStopId || route.stops?.[0]?.stopId || '15521';
+
+              const [predictionData, avgData] = await Promise.all([
+                getPrediction(route.routeId, stopId),
+                getAvgPrediction(route.routeId, stopId)
+              ]);
+
+              const nextArrival = predictionData.length > 0
+                ? `${predictionData[0].prdctdn} min`
+                : 'No buses soon';
+
+              const predictedTime = predictionData[0]?.prdctdn || 0;
+              const isDelayed = predictionData[0]?.dly > 0;
+
+              let status = 'on-time';
+              if (isDelayed) status = 'delayed';
+              else if (predictedTime <= 2) status = 'approaching';
+
+              const avgArrival = avgData?.avg_prediction || 'Unavailable';
+
+              return { ...route, status, nextArrival, avgArrival };
+            } catch (error) {
+              return { ...route, status: 'unknown', nextArrival: 'Coming Soon', avgArrival: 'Unavailable' };
+            }
+          })
+        );
+
         setRoutes(fetchedRoutes);
-      } catch (err) {
-        console.error('Error fetching routes:', err);
+      } catch (error) {
+        console.error('Error fetching routes:', error);
       } finally {
         setRoutesLoading(false);
       }
@@ -295,11 +342,11 @@ const Home = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'on-time':
-        return '✓';
+        return 'On-time';
       case 'delayed':
-        return '⚠';
+        return 'Delayed';
       case 'approaching':
-        return '→';
+        return 'Approaching';
       default:
         return '?';
     }
@@ -347,20 +394,26 @@ const Home = () => {
           ) : (
             routes.map(route => (
               <RouteCard
-                key={route.id}
-                onClick={() => navigate(`/route/${route.id}`)}
+                key={route.routeId}
+                onClick={() => navigate(`/route/${route.routeId}`)}
                 status={route.status}
               >
                 <RouteHeader>
-                  <RouteName>{route.name}</RouteName>
+                  <RouteName>{route.routeName}</RouteName>
                   <StatusIcon status={route.status}>
                     {getStatusIcon(route.status)}
                   </StatusIcon>
                 </RouteHeader>
                 <NextArrival>
-                  <TimeIcon>🕒</TimeIcon>
+                  <TimeIcon></TimeIcon>
                   Next arrival: {route.nextArrival}
                 </NextArrival>
+                {route.avgArrival && (
+                  <NextArrival>
+                    <TimeIcon></TimeIcon>
+                    Avg arrival: {route.avgArrival}
+                  </NextArrival>
+                )}
               </RouteCard>
             ))
           )}
@@ -389,6 +442,9 @@ const Home = () => {
       <FloatingActionButton onClick={() => navigate('/tracker')}>
         🚌
       </FloatingActionButton>
+      <Disclaimer>
+        Arrival predictions are based on estimates and may vary. Users should account for possible delays.
+      </Disclaimer>
     </HomeContainer>
   );
 };

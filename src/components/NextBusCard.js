@@ -11,18 +11,34 @@ const Card = styled.div`
   margin: 1rem auto;
   text-align: center;
 `;
+const ArrivalTime = styled.div`
+  font-weight: bold;
+  color: #004b23;
+  background-color: #e6f2ed;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem auto;
+  border-radius: 6px;
+  width: fit-content;
+  font-size: 1.2rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in;
 
-const Dropdown = styled.select`
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  &:focus {
-    outline: none;
-    border-color: #004b23;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 `;
+
+const formatTime = (minutesFromNow) => {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() + minutesFromNow);
+  return now.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
+
 
 const NextBusCard = ({ route, direction, stop, nextArrivals }) => {
   return (
@@ -38,11 +54,15 @@ const NextBusCard = ({ route, direction, stop, nextArrivals }) => {
       {nextArrivals && nextArrivals.length > 0 ? (
         <>
           <p>Select upcoming arrival:</p>
-          <Dropdown>
-            {nextArrivals.map((time, index) => (
-              <option key={index} value={time}>{time}</option>
-            ))}
-          </Dropdown>
+          <div>
+          {nextArrivals.map((minutes, index) => (
+  <ArrivalTime key={index}>{minutes}</ArrivalTime>
+))}
+
+
+
+</div>
+
         </>
       ) : (
         <p>No arrival data available.</p>

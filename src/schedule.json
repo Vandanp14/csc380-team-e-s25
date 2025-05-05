@@ -1,0 +1,636 @@
+{
+  "route": "OSW10",
+  "schedule": {
+    "Monday-Friday": [
+      {
+        "departure_time": "08:00",
+        "stops": {
+          "Campus Center": "08:00",
+          "Oneida Hall": "08:02",
+          "The Village": "08:06",
+          "Laker Hall": "08:10"
+        }
+      },
+      {
+        "departure_time": "08:20",
+        "stops": {
+          "Campus Center": "08:20",
+          "Oneida Hall": "08:22",
+          "The Village": "08:26",
+          "Laker Hall": "08:30"
+        }
+      },
+      {
+        "departure_time": "08:40",
+        "stops": {
+          "Campus Center": "08:40",
+          "Oneida Hall": "08:42",
+          "The Village": "08:46",
+          "Laker Hall": "08:50"
+        }
+      },
+      {
+        "departure_time": "09:00",
+        "stops": {
+          "Campus Center": "09:00",
+          "Oneida Hall": "09:02",
+          "The Village": "09:06",
+          "Laker Hall": "09:10"
+        }
+      },
+      {
+        "departure_time": "09:20",
+        "stops": {
+          "Campus Center": "09:20",
+          "Oneida Hall": "09:22",
+          "The Village": "09:26",
+          "Laker Hall": "09:30"
+        }
+      },
+      {
+        "departure_time": "09:40",
+        "stops": {
+          "Campus Center": "09:40",
+          "Oneida Hall": "09:42",
+          "The Village": "09:46",
+          "Laker Hall": "09:50"
+        }
+      },
+      {
+        "departure_time": "10:00",
+        "stops": {
+          "Campus Center": "10:00",
+          "Oneida Hall": "10:02",
+          "The Village": "10:06",
+          "Laker Hall": "10:10"
+        }
+      },
+      {
+        "departure_time": "10:20",
+        "stops": {
+          "Campus Center": "10:20",
+          "Oneida Hall": "10:22",
+          "The Village": "10:26",
+          "Laker Hall": "10:30"
+        }
+      },
+      {
+        "departure_time": "10:40",
+        "stops": {
+          "Campus Center": "10:40",
+          "Oneida Hall": "10:42",
+          "The Village": "10:46",
+          "Laker Hall": "10:50"
+        }
+      },
+      {
+        "departure_time": "11:00",
+        "stops": {
+          "Campus Center": "11:00",
+          "Oneida Hall": "11:02",
+          "The Village": "11:06",
+          "Laker Hall": "11:10"
+        }
+      },
+      {
+        "departure_time": "11:20",
+        "stops": {
+          "Campus Center": "11:20",
+          "Oneida Hall": "11:22",
+          "The Village": "11:26",
+          "Laker Hall": "11:30"
+        }
+      },
+      {
+        "departure_time": "11:40",
+        "stops": {
+          "Campus Center": "11:40",
+          "Oneida Hall": "11:42",
+          "The Village": "11:46",
+          "Laker Hall": "11:50"
+        }
+      },
+      {
+        "departure_time": "12:00",
+        "stops": {
+          "Campus Center": "12:00",
+          "Oneida Hall": "12:02",
+          "The Village": "12:06",
+          "Laker Hall": "12:10"
+        }
+      },
+      {
+        "departure_time": "12:20",
+        "stops": {
+          "Campus Center": "12:20",
+          "Oneida Hall": "12:22",
+          "The Village": "12:26",
+          "Laker Hall": "12:30"
+        }
+      },
+      {
+        "departure_time": "12:40",
+        "stops": {
+          "Campus Center": "12:40",
+          "Oneida Hall": "12:42",
+          "The Village": "12:46",
+          "Laker Hall": "12:50"
+        }
+      },
+      {
+        "departure_time": "13:00",
+        "stops": {
+          "Campus Center": "13:00",
+          "Oneida Hall": "13:02",
+          "The Village": "13:06",
+          "Laker Hall": "13:10"
+        }
+      },
+      {
+        "departure_time": "13:20",
+        "stops": {
+          "Campus Center": "13:20",
+          "Oneida Hall": "13:22",
+          "The Village": "13:26",
+          "Laker Hall": "13:30"
+        }
+      },
+      {
+        "departure_time": "13:40",
+        "stops": {
+          "Campus Center": "13:40",
+          "Oneida Hall": "13:42",
+          "The Village": "13:46",
+          "Laker Hall": "13:50"
+        }
+      },
+      {
+        "departure_time": "14:00",
+        "stops": {
+          "Campus Center": "14:00",
+          "Oneida Hall": "14:02",
+          "The Village": "14:06",
+          "Laker Hall": "14:10"
+        }
+      },
+      {
+        "departure_time": "14:20",
+        "stops": {
+          "Campus Center": "14:20",
+          "Oneida Hall": "14:22",
+          "The Village": "14:26",
+          "Laker Hall": "14:30"
+        }
+      },
+      {
+        "departure_time": "14:40",
+        "stops": {
+          "Campus Center": "14:40",
+          "Oneida Hall": "14:42",
+          "The Village": "14:46",
+          "Laker Hall": "14:50"
+        }
+      },
+      {
+        "departure_time": "15:00",
+        "stops": {
+          "Campus Center": "15:00",
+          "Oneida Hall": "15:02",
+          "The Village": "15:06",
+          "Laker Hall": "15:10"
+        }
+      },
+      {
+        "departure_time": "15:20",
+        "stops": {
+          "Campus Center": "15:20",
+          "Oneida Hall": "15:22",
+          "The Village": "15:26",
+          "Laker Hall": "15:30"
+        }
+      },
+      {
+        "departure_time": "15:40",
+        "stops": {
+          "Campus Center": "15:40",
+          "Oneida Hall": "15:42",
+          "The Village": "15:46",
+          "Laker Hall": "15:50"
+        }
+      },
+      {
+        "departure_time": "16:00",
+        "stops": {
+          "Campus Center": "16:00",
+          "Oneida Hall": "16:02",
+          "The Village": "16:06",
+          "Laker Hall": "16:10"
+        }
+      },
+      {
+        "departure_time": "16:20",
+        "stops": {
+          "Campus Center": "16:20",
+          "Oneida Hall": "16:22",
+          "The Village": "16:26",
+          "Laker Hall": "16:30"
+        }
+      },
+      {
+        "departure_time": "16:40",
+        "stops": {
+          "Campus Center": "16:40",
+          "Oneida Hall": "16:42",
+          "The Village": "16:46",
+          "Laker Hall": "16:50"
+        }
+      },
+      {
+        "departure_time": "17:00",
+        "stops": {
+          "Campus Center": "17:00",
+          "Oneida Hall": "17:02",
+          "The Village": "17:06",
+          "Laker Hall": "17:10"
+        }
+      },
+      {
+        "departure_time": "17:20",
+        "stops": {
+          "Campus Center": "17:20",
+          "Oneida Hall": "17:22",
+          "The Village": "17:26",
+          "Laker Hall": "17:30"
+        }
+      },
+      {
+        "departure_time": "17:40",
+        "stops": {
+          "Campus Center": "17:40",
+          "Oneida Hall": "17:42",
+          "The Village": "17:46",
+          "Laker Hall": "17:50"
+        }
+      },
+      {
+        "departure_time": "18:00",
+        "stops": {
+          "Campus Center": "18:00",
+          "Oneida Hall": "18:02",
+          "The Village": "18:06",
+          "Laker Hall": "18:10"
+        }
+      },
+      {
+        "departure_time": "18:20",
+        "stops": {
+          "Campus Center": "18:20",
+          "Oneida Hall": "18:22",
+          "The Village": "18:26",
+          "Laker Hall": "18:30"
+        }
+      },
+      {
+        "departure_time": "18:40",
+        "stops": {
+          "Campus Center": "18:40",
+          "Oneida Hall": "18:42",
+          "The Village": "18:46",
+          "Laker Hall": "18:50"
+        }
+      },
+      {
+        "departure_time": "19:00",
+        "stops": {
+          "Campus Center": "19:00",
+          "Oneida Hall": "19:02",
+          "The Village": "19:06",
+          "Laker Hall": "19:10"
+        }
+      },
+      {
+        "departure_time": "19:20",
+        "stops": {
+          "Campus Center": "19:20",
+          "Oneida Hall": "19:22",
+          "The Village": "19:26",
+          "Laker Hall": "19:30"
+        }
+      },
+      {
+        "departure_time": "19:40",
+        "stops": {
+          "Campus Center": "19:40",
+          "Oneida Hall": "19:42",
+          "The Village": "19:46",
+          "Laker Hall": "19:50"
+        }
+      },
+      {
+        "departure_time": "20:00",
+        "stops": {
+          "Campus Center": "20:00",
+          "Oneida Hall": "20:02",
+          "The Village": "20:06",
+          "Laker Hall": "20:10"
+        }
+      },
+      {
+        "departure_time": "20:20",
+        "stops": {
+          "Campus Center": "20:20",
+          "Oneida Hall": "20:22",
+          "The Village": "20:26",
+          "Laker Hall": "20:30"
+        }
+      },
+      {
+        "departure_time": "20:40",
+        "stops": {
+          "Campus Center": "20:40",
+          "Oneida Hall": "20:42",
+          "The Village": "20:46",
+          "Laker Hall": "20:50"
+        }
+      },
+      {
+        "departure_time": "21:00",
+        "stops": {
+          "Campus Center": "21:00",
+          "Oneida Hall": "21:02",
+          "The Village": "21:06",
+          "Laker Hall": "21:10"
+        }
+      },
+      {
+        "departure_time": "21:20",
+        "stops": {
+          "Campus Center": "21:20",
+          "Oneida Hall": "21:22",
+          "The Village": "21:26",
+          "Laker Hall": "21:30"
+        }
+      },
+      {
+        "departure_time": "21:40",
+        "stops": {
+          "Campus Center": "21:40",
+          "Oneida Hall": "21:42",
+          "The Village": "21:46",
+          "Laker Hall": "21:50"
+        }
+      },
+      {
+        "departure_time": "22:00",
+        "stops": {
+          "Campus Center": "22:00",
+          "Oneida Hall": "22:02",
+          "The Village": "22:06",
+          "Laker Hall": "22:10"
+        }
+      },
+      {
+        "departure_time": "22:20",
+        "stops": {
+          "Campus Center": "22:20",
+          "Oneida Hall": "22:22",
+          "The Village": "22:26",
+          "Laker Hall": "22:30"
+        }
+      },
+      {
+        "departure_time": "22:40",
+        "stops": {
+          "Campus Center": "22:40",
+          "Oneida Hall": "22:42",
+          "The Village": "22:46",
+          "Laker Hall": "22:50"
+        }
+      }
+    ],
+    "Saturday": [
+      {
+        "departure_time": "11:55",
+        "stops": {
+          "Campus Center": "11:55",
+          "Oneida Hall": "11:57",
+          "The Village": "12:01",
+          "Laker Hall": "12:05"
+        }
+      },
+      {
+        "departure_time": "12:15",
+        "stops": {
+          "Campus Center": "12:15",
+          "Oneida Hall": "12:17",
+          "The Village": "12:21",
+          "Laker Hall": "12:25"
+        }
+      },
+      {
+        "departure_time": "12:40",
+        "stops": {
+          "Campus Center": "12:40",
+          "Oneida Hall": "12:42",
+          "The Village": "12:46",
+          "Laker Hall": "12:50"
+        }
+      },
+      {
+        "departure_time": "13:00",
+        "stops": {
+          "Campus Center": "13:00",
+          "Oneida Hall": "13:02",
+          "The Village": "13:06",
+          "Laker Hall": "13:10"
+        }
+      },
+      {
+        "departure_time": "13:25",
+        "stops": {
+          "Campus Center": "13:25",
+          "Oneida Hall": "13:27",
+          "The Village": "13:31",
+          "Laker Hall": "13:35"
+        }
+      },
+      {
+        "departure_time": "13:45",
+        "stops": {
+          "Campus Center": "13:45",
+          "Oneida Hall": "13:47",
+          "The Village": "13:51",
+          "Laker Hall": "13:55"
+        }
+      },
+      {
+        "departure_time": "14:10",
+        "stops": {
+          "Campus Center": "14:10",
+          "Oneida Hall": "14:12",
+          "The Village": "14:16",
+          "Laker Hall": "14:20"
+        }
+      },
+      {
+        "departure_time": "14:30",
+        "stops": {
+          "Campus Center": "14:30",
+          "Oneida Hall": "14:32",
+          "The Village": "14:36",
+          "Laker Hall": "14:40"
+        }
+      },
+      {
+        "departure_time": "14:55",
+        "stops": {
+          "Campus Center": "14:55",
+          "Oneida Hall": "14:57",
+          "The Village": "15:01",
+          "Laker Hall": "15:05"
+        }
+      },
+      {
+        "departure_time": "15:15",
+        "stops": {
+          "Campus Center": "15:15",
+          "Oneida Hall": "15:17",
+          "The Village": "15:21",
+          "Laker Hall": "15:25"
+        }
+      },
+      {
+        "departure_time": "15:40",
+        "stops": {
+          "Campus Center": "15:40",
+          "Oneida Hall": "15:42",
+          "The Village": "15:46",
+          "Laker Hall": "15:50"
+        }
+      },
+      {
+        "departure_time": "16:00",
+        "stops": {
+          "Campus Center": "16:00",
+          "Oneida Hall": "16:02",
+          "The Village": "16:06",
+          "Laker Hall": "16:10"
+        }
+      },
+      {
+        "departure_time": "16:25",
+        "stops": {
+          "Campus Center": "16:25",
+          "Oneida Hall": "16:27",
+          "The Village": "16:31",
+          "Laker Hall": "16:35"
+        }
+      },
+      {
+        "departure_time": "16:45",
+        "stops": {
+          "Campus Center": "16:45",
+          "Oneida Hall": "16:47",
+          "The Village": "16:51",
+          "Laker Hall": "16:55"
+        }
+      },
+      {
+        "departure_time": "17:10",
+        "stops": {
+          "Campus Center": "17:10",
+          "Oneida Hall": "17:12",
+          "The Village": "17:16",
+          "Laker Hall": "17:20"
+        }
+      },
+      {
+        "departure_time": "17:30",
+        "stops": {
+          "Campus Center": "17:30",
+          "Oneida Hall": "17:32",
+          "The Village": "17:36",
+          "Laker Hall": "17:40"
+        }
+      },
+      {
+        "departure_time": "17:55",
+        "stops": {
+          "Campus Center": "17:55",
+          "Oneida Hall": "17:57",
+          "The Village": "18:01",
+          "Laker Hall": "18:05"
+        }
+      },
+      {
+        "departure_time": "18:15",
+        "stops": {
+          "Campus Center": "18:15",
+          "Oneida Hall": "18:17",
+          "The Village": "18:21",
+          "Laker Hall": "18:25"
+        }
+      },
+      {
+        "departure_time": "18:40",
+        "stops": {
+          "Campus Center": "18:40",
+          "Oneida Hall": "18:42",
+          "The Village": "18:46",
+          "Laker Hall": "18:50"
+        }
+      }
+    ]},
+
+  "route": "OSW11",
+  "schedule": {
+    "Monday–Friday": {
+      "Campus Center → Rice Creek": [
+        { "departure_time": "11:00", "stops": { "Campus Center": "11:00", "Romney Lot": "11:03", "Laker Hall": "11:05", "Rice Creek": "11:11" } },
+        { "departure_time": "11:30", "stops": { "Campus Center": "11:30", "Romney Lot": "11:33", "Laker Hall": "11:35", "Rice Creek": "11:41" } },
+        { "departure_time": "12:00", "stops": { "Campus Center": "12:00", "Romney Lot": "12:03", "Laker Hall": "12:05", "Rice Creek": "12:11" } },
+        { "departure_time": "12:30", "stops": { "Campus Center": "12:30", "Romney Lot": "12:33", "Laker Hall": "12:35", "Rice Creek": "12:41" } },
+        { "departure_time": "13:00", "stops": { "Campus Center": "13:00", "Romney Lot": "13:03", "Laker Hall": "13:05", "Rice Creek": "13:11" } },
+        { "departure_time": "13:30", "stops": { "Campus Center": "13:30", "Romney Lot": "13:33", "Laker Hall": "13:35", "Rice Creek": "13:41" } },
+        { "departure_time": "14:00", "stops": { "Campus Center": "14:00", "Romney Lot": "14:03", "Laker Hall": "14:05", "Rice Creek": "14:11" } },
+        { "departure_time": "14:30", "stops": { "Campus Center": "14:30", "Romney Lot": "14:33", "Laker Hall": "14:35", "Rice Creek": "14:41" } },
+        { "departure_time": "15:00", "stops": { "Campus Center": "15:00", "Romney Lot": "15:03", "Laker Hall": "15:05", "Rice Creek": "15:11" } },
+        { "departure_time": "15:30", "stops": { "Campus Center": "15:30", "Romney Lot": "15:33", "Laker Hall": "15:35", "Rice Creek": "15:41" } },
+        { "departure_time": "16:00", "stops": { "Campus Center": "16:00", "Romney Lot": "16:03", "Laker Hall": "16:05", "Rice Creek": "16:11" } },
+        { "departure_time": "16:30", "stops": { "Campus Center": "16:30", "Romney Lot": "16:33", "Laker Hall": "16:35", "Rice Creek": "16:41" } },
+        { "departure_time": "17:00", "stops": { "Campus Center": "17:00", "Romney Lot": "17:03", "Laker Hall": "17:05", "Rice Creek": "17:11" } },
+        { "departure_time": "17:30", "stops": { "Campus Center": "17:30", "Romney Lot": "17:33", "Laker Hall": "17:35", "Rice Creek": "17:41" } },
+        { "departure_time": "18:00", "stops": { "Campus Center": "18:00", "Romney Lot": "18:03", "Laker Hall": "18:05", "Rice Creek": "18:11" } },
+        { "departure_time": "18:30", "stops": { "Campus Center": "18:30", "Romney Lot": "18:33", "Laker Hall": "18:35", "Rice Creek": "18:41" } },
+        { "departure_time": "19:00", "stops": { "Campus Center": "19:00", "Romney Lot": "19:03", "Laker Hall": "19:05", "Rice Creek": "19:11" } },
+        { "departure_time": "19:30", "stops": { "Campus Center": "19:30", "Romney Lot": "19:33", "Laker Hall": "19:35", "Rice Creek": "19:41" } },
+        { "departure_time": "20:00", "stops": { "Campus Center": "20:00", "Romney Lot": "20:03", "Laker Hall": "20:05", "Rice Creek": "20:11" } },
+        { "departure_time": "20:30", "stops": { "Campus Center": "20:30", "Romney Lot": "20:33", "Laker Hall": "20:35", "Rice Creek": "20:41" } }
+      ],
+      "Rice Creek → Campus Center": [
+        { "departure_time": "11:11", "stops": { "Rice Creek": "11:11", "Laker Hall": "11:19", "Romney Lot": "11:20", "Campus Center": "11:30" } },
+        { "departure_time": "11:41", "stops": { "Rice Creek": "11:41", "Laker Hall": "11:49", "Romney Lot": "11:50", "Campus Center": "12:00" } },
+        { "departure_time": "12:11", "stops": { "Rice Creek": "12:11", "Laker Hall": "12:19", "Romney Lot": "12:20", "Campus Center": "12:30" } },
+        { "departure_time": "12:41", "stops": { "Rice Creek": "12:41", "Laker Hall": "12:49", "Romney Lot": "12:50", "Campus Center": "13:00" } },
+        { "departure_time": "13:11", "stops": { "Rice Creek": "13:11", "Laker Hall": "13:19", "Romney Lot": "13:20", "Campus Center": "13:30" } },
+        { "departure_time": "13:41", "stops": { "Rice Creek": "13:41", "Laker Hall": "13:49", "Romney Lot": "13:50", "Campus Center": "14:00" } },
+        { "departure_time": "14:11", "stops": { "Rice Creek": "14:11", "Laker Hall": "14:19", "Romney Lot": "14:20", "Campus Center": "14:30" } },
+        { "departure_time": "14:41", "stops": { "Rice Creek": "14:41", "Laker Hall": "14:49", "Romney Lot": "14:50", "Campus Center": "15:00" } },
+        { "departure_time": "15:11", "stops": { "Rice Creek": "15:11", "Laker Hall": "15:19", "Romney Lot": "15:20", "Campus Center": "15:30" } },
+        { "departure_time": "15:41", "stops": { "Rice Creek": "15:41", "Laker Hall": "15:49", "Romney Lot": "15:50", "Campus Center": "16:00" } },
+        { "departure_time": "16:11", "stops": { "Rice Creek": "16:11", "Laker Hall": "16:19", "Romney Lot": "16:20", "Campus Center": "16:30" } },
+        { "departure_time": "16:41", "stops": { "Rice Creek": "16:41", "Laker Hall": "16:49", "Romney Lot": "16:50", "Campus Center": "17:00" } },
+        { "departure_time": "17:11", "stops": { "Rice Creek": "17:11", "Laker Hall": "17:19", "Romney Lot": "17:20", "Campus Center": "17:30" } },
+        { "departure_time": "17:41", "stops": { "Rice Creek": "17:41", "Laker Hall": "17:49", "Romney Lot": "17:50", "Campus Center": "18:00" } },
+        { "departure_time": "18:11", "stops": { "Rice Creek": "18:11", "Laker Hall": "18:19", "Romney Lot": "18:20", "Campus Center": "18:30" } },
+        { "departure_time": "18:41", "stops": { "Rice Creek": "18:41", "Laker Hall": "18:49", "Romney Lot": "18:50", "Campus Center": "19:00" } },
+        { "departure_time": "19:11", "stops": { "Rice Creek": "19:11", "Laker Hall": "19:19", "Romney Lot": "19:20", "Campus Center": "19:30" } },
+        { "departure_time": "19:41", "stops": { "Rice Creek": "19:41", "Laker Hall": "19:49", "Romney Lot": "19:50", "Campus Center": "20:00" } },
+        { "departure_time": "20:11", "stops": { "Rice Creek": "20:11", "Laker Hall": "20:19", "Romney Lot": "20:20", "Campus Center": "20:30" } },
+        { "departure_time": "20:41", "stops": { "Rice Creek": "20:41", "Laker Hall": "20:49", "Romney Lot": "20:50", "Campus Center": "21:00" } }
+      ]
+    }
+  }
+}
+
+}
