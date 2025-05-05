@@ -30,7 +30,7 @@ export const busRoutes = [
       defaultStopId: '15521',
       stops: [
         { stopId: '17941', stopName: 'RICE CREEK' },
-        { stopId: '18369', stopName: 'Fallbrook Lodge' },
+        { stopId: '18368', stopName: 'Fallbrook Lodge' },
         { stopId: '16306', stopName: 'Laker Hall' },
         { stopId: '3486', stopName: 'SUNY Oswego Romney Lot Shelter' },
         { stopId: '16085', stopName: '5th Ave & Washington Blvd' },

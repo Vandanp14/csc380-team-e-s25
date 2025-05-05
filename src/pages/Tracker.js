@@ -47,8 +47,16 @@ function Tracker() {
   const handleRouteChange = (e) => {
     const route = e.target.value;
     setSelectedRoute(route);
-    setStops(routeData[route] || []);
+  
+    // Inject the route name into each stop object
+    const enrichedStops = (routeData[route] || []).map(stop => ({
+      ...stop,
+      route: route,
+    }));
+  
+    setStops(enrichedStops);
   };
+  
 
   return (
     <>
@@ -64,7 +72,7 @@ function Tracker() {
             ))}
           </Dropdown>
         </SelectWrapper>
-        <BusMap buses={stops} />
+        <BusMap route={selectedRoute} buses={stops} />
       </TrackerWrapper>
     </>
   );
