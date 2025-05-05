@@ -5,7 +5,8 @@ from flask_cors import CORS
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app)
+
 
 # Connect to MySQL
 def get_connection():
@@ -84,13 +85,15 @@ def get_latest_7_avg_prediction(route, stop_id, hour, minute):
                 INNER JOIN (
                     SELECT tmstmp, MIN(prdtm) AS earliest_prdtm
                     FROM ETA
-                    WHERE rt = %s AND stpid = %s AND TIME(tmstmp) = %s
+                    WHERE rt = %s AND stpid = %s AND TIME(tmstmp) = %s AND 
                     GROUP BY tmstmp
                 ) t2 ON t1.tmstmp = t2.tmstmp AND t1.prdtm = t2.earliest_prdtm
                 WHERE t1.rt = %s AND t1.stpid = %s
                 ORDER BY t1.tmstmp DESC
                 LIMIT 7;
             """
+
+
             cursor.execute(query, (route, stop_id, exact_time, route, stop_id))
             results = cursor.fetchall()
 
