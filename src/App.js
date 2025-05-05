@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import Tracker from './pages/Tracker';
 import Schedule from './pages/Schedule';
 import RouteDetail from './pages/RouteDetail';
-import Help from './pages/HelpPage'
+import HelpPage from './pages/HelpPage'
 import styled, { createGlobalStyle } from 'styled-components';
 import TripContext from './TripContext';
 import './App.css';
@@ -41,6 +41,7 @@ function App() {
             <Route path="/tracker" element={<Tracker />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/route/:routeId" element={<RouteDetail />} />
+            <Route path="/help" element={<HelpPage />} />
           </Routes>
         </AppContainer>
       </TripContext.Provider>
