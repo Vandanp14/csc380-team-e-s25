@@ -1,7 +1,6 @@
 // src/pages/RouteDetail.js
 import React, { useContext, useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import { useParams, NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import TripContext from '../TripContext';
 import NextBusCard from '../components/NextBusCard';
@@ -11,13 +10,11 @@ import busData from '../Data/busData';
 const Container = styled.div`
   padding: 1rem;
 `;
-
 const Header = styled.h2`
   text-align: center;
   margin: 1rem 0;
   color: #002B5C;
 `;
-
 const Card = styled.div`
   background-color: white;
   padding: 1.5rem;
@@ -26,7 +23,6 @@ const Card = styled.div`
   margin: 1rem auto;
   max-width: 600px;
 `;
-
 const Dropdown = styled.select`
   padding: 0.5rem;
   width: 100%;
@@ -39,7 +35,6 @@ const Dropdown = styled.select`
     border-color: #004b23;
   }
 `;
-
 const Label = styled.label`
   font-weight: bold;
   color: #004b23;
@@ -47,101 +42,111 @@ const Label = styled.label`
   display: block;
 `;
 
-function RouteDetail() {
+export default function RouteDetail() {
   const { routeId } = useParams();
   const { trip } = useContext(TripContext);
 
   const [direction, setDirection] = useState('');
   const [stopId, setStopId] = useState('');
   const [nextArrivals, setNextArrivals] = useState([]);
-  const [avgArrival, setAvgArrival] = useState('');
-  const [avgTimeObj, setAvgTimeObj] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [avgArrival, setAvgArrival]   = useState('');
+  const [avgTimeObj, setAvgTimeObj]   = useState(null);
+  const [loading, setLoading]         = useState(false);
+
+  const [customTimeEnabled, setCustomTimeEnabled] = useState(false);
+  const [selectedHour,   setSelectedHour]   = useState(new Date().getHours());
+  const [selectedMinute, setSelectedMinute] = useState(new Date().getMinutes());
+
   const [stopsByDirection, setStopsByDirection] = useState({});
+  const routeInfo = busData.find(r => r.routeId === routeId);
 
-  const routeInfo = busData.find((r) => r.routeId === routeId);
-
+  // 1) build stopsByDirection
   useEffect(() => {
     if (!routeInfo) return;
-
-    const allStops = routeInfo.stops || [];
-    const mid = Math.ceil(allStops.length / 2);
-
-    const simulated = {
-      'TO CAMPUS': allStops.slice(0, mid),
-      'FROM CAMPUS': allStops.slice(mid),
-    };
-
-    setStopsByDirection(simulated);
+    const all = routeInfo.stops || [];
+    const mid = Math.ceil(all.length / 2);
+    setStopsByDirection({
+      'TO CAMPUS':   all.slice(0, mid),
+      'FROM CAMPUS': all.slice(mid),
+    });
   }, [routeInfo]);
 
+  // 2) context defaults
   useEffect(() => {
     if (trip.direction) setDirection(trip.direction);
-    if (trip.stopId) setStopId(trip.stopId);
+    if (trip.stopId)    setStopId(trip.stopId);
   }, [trip]);
 
+  // 3) real-time prediction
   useEffect(() => {
-    const fetchData = async () => {
-      if (!stopId || !routeId) return;
+    if (!routeId || !stopId) return;
+    setLoading(true);
 
-      setLoading(true);
-      try {
-        const [predictionData, avgData] = await Promise.all([
-          getPrediction(routeId, stopId),
-          getAvgPrediction(routeId, stopId)
-        ]);
-
-        // Real-time prediction
-        if (predictionData.length > 0) {
-          setNextArrivals([`${predictionData[0].prdctdn} min`]);
+    getPrediction(routeId, stopId)
+      .then(payload => {
+        // normalize to array
+        const list = Array.isArray(payload) ? payload : [payload];
+        if (list.length > 0 && list[0].prdctdn != null) {
+          setNextArrivals([`${Number(list[0].prdctdn)} min`]);
         } else {
-          setNextArrivals(["No buses soon"]);
+          setNextArrivals(['No buses soon']);
         }
+      })
+      .catch(err => {
+        console.error('Real-time fetch error:', err);
+        setNextArrivals(['Error loading predictions']);
+      })
+      .finally(() => setLoading(false));
+  }, [routeId, stopId]);
 
-        // Average prediction
-        if (avgData?.avg_prediction) {
-          setAvgArrival(avgData.avg_prediction);
+  // 4) average prediction
+  useEffect(() => {
+    if (!routeId || !stopId) return;
+    const now = new Date();
+    const hour   = customTimeEnabled ? selectedHour   : now.getHours();
+    const minute = customTimeEnabled ? selectedMinute : now.getMinutes();
 
-          const now = new Date();
-          const avgDate = new Date(
+    getAvgPrediction(routeId, stopId, hour, minute)
+      .then(avg => {
+        if (avg?.avg_prediction) {
+          setAvgArrival(avg.avg_prediction);
+          setAvgTimeObj(new Date(
             now.getFullYear(),
             now.getMonth(),
             now.getDate(),
-            avgData.hour,
-            avgData.minute
-          );
-          setAvgTimeObj(avgDate);
+            avg.hour,
+            avg.minute
+          ));
         } else {
           setAvgArrival('Unavailable');
           setAvgTimeObj(null);
         }
-      } catch (error) {
-        console.error('Error fetching predictions:', error);
-        setNextArrivals(["Error loading predictions"]);
+      })
+      .catch(err => {
+        console.error('Average fetch error:', err);
         setAvgArrival('Unavailable');
         setAvgTimeObj(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [stopId, routeId]);
+      });
+  }, [routeId, stopId, customTimeEnabled, selectedHour, selectedMinute]);
 
   const stopsToShow = stopsByDirection[direction] || [];
 
-  const getRelativeTime = (avgDate) => {
-    const now = new Date();
-    const diffMin = Math.round((avgDate - now) / 60000);
-
-    if (diffMin > 0) return `in ~${diffMin} mins`;
-    if (diffMin < 0) return `${Math.abs(diffMin)} mins ago`;
+  const getRelativeTime = avgDate => {
+    const diff = Math.round((avgDate.getTime() - Date.now()) / 60000);
+    if (diff > 0)  return `in ~${diff} mins`;
+    if (diff < 0)  return `${Math.abs(diff)} mins ago`;
     return 'now';
   };
 
   return (
-    <div>
-      <Navbar />
+    <>
+      {/* simple NavLink Navbar to avoid active={false} warning */}
+      <nav style={{ padding: '1rem', textAlign: 'center' }}>
+        <NavLink to="/"    end style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Home</NavLink>{' '}
+        <NavLink to="/schedule" style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Schedule</NavLink>{' '}
+        <NavLink to="/tracker"  style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Live Tracker</NavLink>
+      </nav>
+
       <Container>
         <Header>Route Detail for {routeId}</Header>
 
@@ -149,7 +154,7 @@ function RouteDetail() {
           <Label>Select Direction</Label>
           <Dropdown
             value={direction}
-            onChange={(e) => {
+            onChange={e => {
               setDirection(e.target.value);
               setStopId('');
               setNextArrivals([]);
@@ -158,7 +163,7 @@ function RouteDetail() {
             }}
           >
             <option value="">Select Direction</option>
-            {Object.keys(stopsByDirection).map((dir) => (
+            {Object.keys(stopsByDirection).map(dir => (
               <option key={dir} value={dir}>{dir}</option>
             ))}
           </Dropdown>
@@ -166,26 +171,52 @@ function RouteDetail() {
           <Label>Select Stop</Label>
           <Dropdown
             value={stopId}
-            onChange={(e) => setStopId(e.target.value)}
+            onChange={e => setStopId(e.target.value)}
             disabled={!direction}
           >
             <option value="">Select Stop</option>
-            {stopsToShow.map((s) => (
+            {stopsToShow.map(s => (
               <option key={s.stopId} value={s.stopId}>
                 {s.stopName}
               </option>
             ))}
           </Dropdown>
+
+          <Label style={{ marginTop: 16 }}>
+            <input
+              type="checkbox"
+              checked={customTimeEnabled}
+              onChange={e => setCustomTimeEnabled(e.target.checked)}
+              style={{ marginRight: 8 }}
+            />
+            Customize time for average prediction
+          </Label>
+
+          {customTimeEnabled && (
+            <>
+              <Label>Select Hour</Label>
+              <Dropdown value={selectedHour} onChange={e => setSelectedHour(+e.target.value)}>
+                {Array.from({ length: 24 }, (_, i) =>
+                  <option key={i} value={i}>{i.toString().padStart(2,'0')}</option>
+                )}
+              </Dropdown>
+
+              <Label>Select Minute</Label>
+              <Dropdown value={selectedMinute} onChange={e => setSelectedMinute(+e.target.value)}>
+                {Array.from({ length: 60 }, (_, i) =>
+                  <option key={i} value={i}>{i.toString().padStart(2,'0')}</option>
+                )}
+              </Dropdown>
+            </>
+          )}
         </Card>
 
         <NextBusCard
           route={routeId}
           direction={direction}
-          stop={
-            stopId
-              ? (stopsToShow.find(s => s.stopId === stopId)?.stopName || stopId)
-              : ''
-          }
+          stop={stopId
+            ? (stopsToShow.find(s=>s.stopId===stopId)?.stopName || stopId)
+            : ''}
           nextArrivals={loading ? ['Loading...'] : nextArrivals}
         />
 
@@ -195,8 +226,8 @@ function RouteDetail() {
             <p>
               Historical average arrival: <strong>{avgArrival}</strong>
               {avgTimeObj && (
-                <span style={{ color: '#777', fontSize: '0.9rem' }}>
-                  {' '}({getRelativeTime(avgTimeObj)})
+                <span style={{ marginLeft: 8, color: '#777', fontSize: '0.9rem' }}>
+                  ({getRelativeTime(avgTimeObj)})
                 </span>
               )}
             </p>
@@ -208,8 +239,6 @@ function RouteDetail() {
           <p>Graphical analysis coming soon…</p>
         </Card>
       </Container>
-    </div>
+    </>
   );
 }
-
-export default RouteDetail;

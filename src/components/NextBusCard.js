@@ -53,7 +53,7 @@ const NextBusCard = ({ route, direction, stop, nextArrivals }) => {
       )}
       {nextArrivals && nextArrivals.length > 0 ? (
         <>
-          <p>Select upcoming arrival:</p>
+          <p>The ETA is:</p>
           <div>
           {nextArrivals.map((minutes, index) => (
   <ArrivalTime key={index}>{minutes}</ArrivalTime>
