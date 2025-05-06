@@ -55,9 +55,18 @@ const NextBusCard = ({ route, direction, stop, nextArrivals }) => {
         <>
           <p>The ETA is:</p>
           <div>
-          {nextArrivals.map((minutes, index) => (
-  <ArrivalTime key={index}>{minutes}</ArrivalTime>
-))}
+          {nextArrivals.map((arr, index) => (
+              <ArrivalTime key={index}>
+                {arr.minutes} —  {arr.time} <br />
+                {new Date().toLocaleDateString(undefined, {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </ArrivalTime>
+          ))}
+
 
 
 

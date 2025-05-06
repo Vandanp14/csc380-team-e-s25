@@ -87,9 +87,13 @@ export default function RouteDetail() {
         // normalize to array
         const list = Array.isArray(payload) ? payload : [payload];
         if (list.length > 0 && list[0].prdctdn != null) {
-          setNextArrivals([`${Number(list[0].prdctdn)} min`]);
+          const p = list[0];
+          setNextArrivals([{
+            minutes: `${Number(p.prdctdn)} min`,
+            time: p.prdtm
+          }]);
         } else {
-          setNextArrivals(['No buses soon']);
+          setNextArrivals(['No buses for a while']);
         }
       })
       .catch(err => {
@@ -132,10 +136,10 @@ export default function RouteDetail() {
   const stopsToShow = stopsByDirection[direction] || [];
 
   const getRelativeTime = avgDate => {
-    const diff = Math.round((avgDate.getTime() - Date.now()) / 60000);
+    const diff = Math.round((avgDate.getTime() - Date.now())/ 60000);
     if (diff > 0)  return `in ~${diff} mins`;
     if (diff < 0)  return `${Math.abs(diff)} mins ago`;
-    return 'now';
+    return '';
   };
 
   return (
@@ -226,19 +230,10 @@ export default function RouteDetail() {
             <h3>Typical Arrival Time</h3>
             <p>
               Historical average arrival: <strong>{avgArrival}</strong>
-              {avgTimeObj && (
-                <span style={{ marginLeft: 8, color: '#777', fontSize: '0.9rem' }}>
-                  ({getRelativeTime(avgTimeObj)})
-                </span>
-              )}
             </p>
           </Card>
         )}
 
-        <Card>
-          <h3>Arrival Trends</h3>
-          <p>Graphical analysis coming soon…</p>
-        </Card>
       </Container>
     </>
   );
