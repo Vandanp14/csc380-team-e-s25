@@ -31,12 +31,12 @@ export const busRoutes = [
       stops: [
         { stopId: '17941', stopName: 'RICE CREEK' },
         { stopId: '18368', stopName: 'Fallbrook Lodge' },
-        { stopId: '16306', stopName: 'Laker Hall' },
-        { stopId: '3486', stopName: 'SUNY Oswego Romney Lot Shelter' },
-        { stopId: '16085', stopName: '5th Ave & Washington Blvd' },
-        { stopId: '16016', stopName: 'Washington Blvd & Sheldon Ave' },
-        { stopId: '16164', stopName: 'Sheldon Ave & Takamine Rd' },
-        { stopId: '16168', stopName: 'Rudolph St & Centennial Dr' },
+        { stopId: '15534', stopName: 'Laker Hall' },
+        { stopId: '16160', stopName: 'SUNY Oswego Romney Lot Shelter' },
+        { stopId: '9684', stopName: 'Washington Blvd & 5th Ave' },
+        { stopId: '9682', stopName: 'Washington Blvd & Sheldon Ave' },
+        { stopId: '9679', stopName: 'Washington Blvd & Baylis St' },
+        { stopId: '16086', stopName: '5th Ave & Hwy 104' },
         { stopId: '15521', stopName: 'SUNY OSWEGO CAMPUS CENTER' }
       ]
     },
