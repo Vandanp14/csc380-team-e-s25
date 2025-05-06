@@ -1,12 +1,8 @@
 // src/pages/Help.js
-import React, { useContext, useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Navbar from '../components/Navbar';
-import FilterBar from '../components/FilterBar';
-import ScheduleTable from '../components/ScheduleTable';
-import NextBusCard from '../components/NextBusCard';
-import TripContext from '../TripContext';
+
 
 const HelpContainer = styled.div`
   background-color: #f7fafc;
@@ -114,12 +110,26 @@ function HelpPage() {
                   </FAQAnswer>
                 )}
               </FAQItem>
-
-              <FAQItem>
+               <FAQItem>
                 <FAQQuestion onClick={() => toggleFAQ(3)}>
-                  How do I see the different stop in the map?
+                  Where does it say there is No Prediction Available?
                 </FAQQuestion>
                 {openFAQ === 3 && (
+                    <FAQAnswer>
+                      - There are two possible reasons for this: <br/>
+                      - 1) There is no bus scheduled for a while for that route and stop.<br/>
+                      - 2) Bus data not available yet.
+                      - 3) Server Error.<br/>
+                      - Retry again in a couple minutes or check official schedule pdf.
+                    </FAQAnswer>
+                )}
+              </FAQItem>
+
+              <FAQItem>
+                <FAQQuestion onClick={() => toggleFAQ(4)}>
+                  How do I see the different stop in the map?
+                </FAQQuestion>
+                {openFAQ === 4 && (
                   <FAQAnswer>
                     - On the top right, click "Map". <br />
                     - Select Route from the drop down. <br />
@@ -130,10 +140,10 @@ function HelpPage() {
               </FAQItem>
 
               <FAQItem>
-                <FAQQuestion onClick={() => toggleFAQ(4)}>
+                <FAQQuestion onClick={() => toggleFAQ(5)}>
                   Where do I look for the prediction for my stop?
                 </FAQQuestion>
-                {openFAQ === 4 && (
+                {openFAQ === 5 && (
                   <FAQAnswer>
                     - On the top right, click "Home" <br />
                     - From the panel displayed for different buses, click on your Bus Route. <br />
@@ -144,10 +154,10 @@ function HelpPage() {
               </FAQItem>
 
               <FAQItem>
-                <FAQQuestion onClick={() => toggleFAQ(5)}>
+                <FAQQuestion onClick={() => toggleFAQ(6)}>
                   What do the different colors in the homepage panel mean?
                 </FAQQuestion>
-                {openFAQ === 5 && (
+                {openFAQ === 6 && (
                   <FAQAnswer>
                     - Red: Delay <br />
                     - Green: On time <br />

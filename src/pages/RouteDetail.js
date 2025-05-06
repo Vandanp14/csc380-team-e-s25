@@ -142,9 +142,10 @@ export default function RouteDetail() {
     <>
       {/* simple NavLink Navbar to avoid active={false} warning */}
       <nav style={{ padding: '1rem', textAlign: 'center' }}>
-        <NavLink to="/"    end style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Home</NavLink>{' '}
-        <NavLink to="/schedule" style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Schedule</NavLink>{' '}
-        <NavLink to="/tracker"  style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Mapr</NavLink>
+        <NavLink to="/"    end style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Home /</NavLink>{' '}
+        <NavLink to="/schedule" style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Schedule /</NavLink>{' '}
+        <NavLink to="/tracker"  style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Map /</NavLink>{' '}
+        <NavLink to="/help"  style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Help</NavLink>
       </nav>
 
       <Container>
