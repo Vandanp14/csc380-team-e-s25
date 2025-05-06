@@ -144,7 +144,7 @@ export default function RouteDetail() {
       <nav style={{ padding: '1rem', textAlign: 'center' }}>
         <NavLink to="/"    end style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Home</NavLink>{' '}
         <NavLink to="/schedule" style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Schedule</NavLink>{' '}
-        <NavLink to="/tracker"  style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Live Tracker</NavLink>
+        <NavLink to="/tracker"  style={({isActive})=>({fontWeight: isActive?'bold':'normal'})}>Mapr</NavLink>
       </nav>
 
       <Container>

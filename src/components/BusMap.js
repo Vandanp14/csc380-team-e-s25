@@ -16,29 +16,28 @@ function BusMap({ buses }) {
   const [predictions, setPredictions] = useState({});
   const markerRefs = useRef({});
 
-  // 🔁 Fetch prediction from the backend
+  //Fetch prediction from the backend
  const fetchPrediction = async (route, stopId) => {
-  console.log("🔍 Fetching prediction for", route, stopId);
+  console.log("Fetching prediction for", route, stopId);
   try {
     const data = await getPrediction(route, stopId);
-    console.log("✅ Prediction data received:", data);
+    console.log(" Prediction data received:", data);
 
-    // 💥 This was expecting an array — but you’re getting an object!
     if (data && typeof data === 'object' && 'prdctdn' in data) {
       return `${data.prdctdn} min`;
     } else {
       return 'No prediction available';
     }
   } catch (err) {
-    console.error('❌ Error fetching prediction:', err);
+    console.error(' Error fetching prediction:', err);
     return 'Error fetching prediction';
   }
 };
 
 
-  // 🧠 Triggered when a marker is clicked
+  //Triggered when a marker is clicked
   const handleMarkerClick = async (bus) => {
-    console.log("📌 Marker clicked for:", bus.stpnm, "| Stop ID:", bus.stpid);
+    console.log("Marker clicked for:", bus.stpnm, "| Stop ID:", bus.stpid);
 
     // Only fetch if we don't already have it
     if (!predictions[bus.stpid]) {
@@ -46,7 +45,7 @@ function BusMap({ buses }) {
 
       setPredictions((prev) => {
         const updated = { ...prev, [bus.stpid]: pred };
-        console.log("🧠 Updated predictions state:", updated);
+        console.log("Updated predictions state:", updated);
         return updated;
       });
 
@@ -59,7 +58,7 @@ function BusMap({ buses }) {
         }
       }, 100);
     } else {
-      console.log("🔁 Using cached prediction for", bus.stpid);
+      console.log(" Using cached prediction for", bus.stpid);
     }
   };
 
@@ -97,9 +96,9 @@ function BusMap({ buses }) {
   );
 }
 
-// 📋 Renders each popup's info
+//Renders each popup's info
 function PopupContent({ bus, prediction }) {
-  console.log("📦 Rendering popup for:", bus.stpnm, "| Prediction:", prediction);
+  console.log("Rendering popup for:", bus.stpnm, "| Prediction:", prediction);
 
   const isLoaded = typeof prediction === 'string' && prediction.includes('min');
 
