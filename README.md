@@ -20,14 +20,12 @@ Built on Python, MySQL, and React.js.
 
 Modules:
 
-- mysql-connector
-- requests
-- datetime
+The full list of modules used can be found in requiremnts.txt.
 
 Features:
 - Most recent predictions on bus arrival times
 - View Schedules
-- Look at the live map of the specific buses 
+- Look at the map for the specific buses and stops.
 
 Contributors:
 1. Vandan Patel
