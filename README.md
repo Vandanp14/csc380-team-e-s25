@@ -27,8 +27,8 @@ Features:
 - View Schedules
 - Look at the map for the specific buses and stops.
 
-Contributors:
-1. Vandan Patel
+Contributors: 
+1. Vandan Patel  (95% of the Javascript)
 2. Diya Patel
 3. Niva Pradhan
 4. Emma Halsey
